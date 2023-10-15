@@ -4,8 +4,14 @@ using System.Text;
 
 public class LogitechSteeringWheel : MonoBehaviour
 {
+    // pridet static check
+    // button down
+
+    public static bool wheelConnected = false;
 
     LogitechGSDK.LogiControllerPropertiesData properties;
+
+    private bool firstTime = true;
     private string actualState;
     private string activeForces;
     private string propertiesEdit;
@@ -43,13 +49,18 @@ public class LogitechSteeringWheel : MonoBehaviour
         Debug.Log("SteeringShutdown:" + LogitechGSDK.LogiSteeringShutdown());
     }
 
-    void OnGUI()
+    // void OnGUI()
+    // {
+    //     activeForces = GUI.TextArea(new Rect(10, 10, 180, 200), activeForces, 400);
+    //     propertiesEdit = GUI.TextArea(new Rect(200, 10, 200, 200), propertiesEdit, 400);
+    //     actualState = GUI.TextArea(new Rect(410, 10, 300, 200), actualState, 1000);
+    //     buttonStatus = GUI.TextArea(new Rect(720, 10, 300, 200), buttonStatus, 1000);
+    //     GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
+    // }
+
+    void SmallFrontForce() 
     {
-        activeForces = GUI.TextArea(new Rect(10, 10, 180, 200), activeForces, 400);
-        propertiesEdit = GUI.TextArea(new Rect(200, 10, 200, 200), propertiesEdit, 400);
-        actualState = GUI.TextArea(new Rect(410, 10, 300, 200), actualState, 1000);
-        buttonStatus = GUI.TextArea(new Rect(720, 10, 300, 200), buttonStatus, 1000);
-        GUI.Label(new Rect(10, 400, 800, 400), forcesLabel);
+        LogitechGSDK.LogiPlayFrontalCollisionForce(0, 20);
     }
 
     // Update is called once per frame
@@ -58,7 +69,7 @@ public class LogitechSteeringWheel : MonoBehaviour
         //All the test functions are called on the first device plugged in(index = 0)
         if (LogitechGSDK.LogiUpdate() && LogitechGSDK.LogiIsConnected(0))
         {
-
+            wheelConnected = true;
             //CONTROLLER PROPERTIES
             StringBuilder deviceName = new StringBuilder(256);
             LogitechGSDK.LogiGetFriendlyProductName(0, deviceName, 256);
@@ -153,9 +164,13 @@ public class LogitechSteeringWheel : MonoBehaviour
 
             // FORCES AND EFFECTS 
             activeForces = "Active forces and effects :\n";
+            if (firstTime) {
+                Invoke("SmallFrontForce", .1f);
+                firstTime = false;
+            }
 
             //Spring Force -> S
-            if (Input.GetKeyUp(KeyCode.S))
+            if (false && Input.GetKeyUp(KeyCode.S))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SPRING))
                 {
@@ -170,7 +185,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Constant Force -> C
-            if (Input.GetKeyUp(KeyCode.C))
+            if (false && Input.GetKeyUp(KeyCode.C))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_CONSTANT))
                 {
@@ -185,7 +200,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Damper Force -> D
-            if (Input.GetKeyUp(KeyCode.D))
+            if (false && Input.GetKeyUp(KeyCode.D))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_DAMPER))
                 {
@@ -200,19 +215,19 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Side Collision Force -> left or right arrow
-            if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+            if (false && Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
             {
                 LogitechGSDK.LogiPlaySideCollisionForce(0, 60);
             }
 
             //Front Collision Force -> up arrow
-            if (Input.GetKeyUp(KeyCode.UpArrow))
+            if (false && Input.GetKeyUp(KeyCode.UpArrow))
             {
                 LogitechGSDK.LogiPlayFrontalCollisionForce(0, 60);
             }
 
             //Dirt Road Effect-> I
-            if (Input.GetKeyUp(KeyCode.I))
+            if (false && Input.GetKeyUp(KeyCode.I))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_DIRT_ROAD))
                 {
@@ -228,7 +243,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Bumpy Road Effect-> B
-            if (Input.GetKeyUp(KeyCode.B))
+            if (false && Input.GetKeyUp(KeyCode.B))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_BUMPY_ROAD))
                 {
@@ -244,7 +259,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Slippery Road Effect-> L
-            if (Input.GetKeyUp(KeyCode.L))
+            if (false && Input.GetKeyUp(KeyCode.L))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SLIPPERY_ROAD))
                 {
@@ -259,7 +274,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Surface Effect-> U
-            if (Input.GetKeyUp(KeyCode.U))
+            if (false && Input.GetKeyUp(KeyCode.U))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SURFACE_EFFECT))
                 {
@@ -274,7 +289,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Car Airborne -> A
-            if (Input.GetKeyUp(KeyCode.A))
+            if (false && Input.GetKeyUp(KeyCode.A))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_CAR_AIRBORNE))
                 {
@@ -289,7 +304,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Soft Stop Force -> O
-            if (Input.GetKeyUp(KeyCode.O))
+            if (false && Input.GetKeyUp(KeyCode.O))
             {
                 if (LogitechGSDK.LogiIsPlaying(0, LogitechGSDK.LOGI_FORCE_SOFTSTOP))
                 {
@@ -321,7 +336,7 @@ public class LogitechSteeringWheel : MonoBehaviour
             }
 
             //Play leds -> P
-            if (Input.GetKeyUp(KeyCode.P))
+            if (false && Input.GetKeyUp(KeyCode.P))
             {
                 LogitechGSDK.LogiPlayLeds(0, 20, 20, 20);
             }
