@@ -4,9 +4,6 @@ using System.Text;
 
 public class LogitechSteeringWheel : MonoBehaviour
 {
-    // pridet static check
-    // button down
-
     public static bool wheelConnected = false;
 
     LogitechGSDK.LogiControllerPropertiesData properties;
