@@ -37,9 +37,12 @@ public static class CustomInput
             return 0f;
         var rec = LogitechGSDK.LogiGetStateUnity(0);
         switch (axisName) {
-            case "Steering H": return rec.lX;
-            case "Gas V": return rec.lY;
+            case "Steering": return rec.lX;
+            case "Gas": return rec.lY;
+            case "Brake": return rec.lRz;
+            case "Clutch": return rec.rglSlider[0];
         }
+        Debug.Log("GetAxis value not found");
         return 0f;
     }
 
