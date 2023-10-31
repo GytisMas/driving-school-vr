@@ -46,6 +46,16 @@ public static class CustomInput
         return 0f;
     }
 
+    public static float GetAxisNormalised(string axisName) 
+    {
+        return GetAxis(axisName) / SteeringWheel.MAX_VAL;
+    }
+
+    public static float GetAxisNormalised01(string axisName) 
+    {
+        return (GetAxis(axisName) + SteeringWheel.MAX_VAL) / (2 * SteeringWheel.MAX_VAL);
+    }
+
     private static bool GetKeyDown(InputLabel inputLabel, InputLabel targetLabel, KeyCode keyCode, int wheelKeyIndex, LogitechGSDK.DIJOYSTATE2ENGINES rec) {
         if ((inputLabel & targetLabel) != 0)
             if (Input.GetKeyDown(keyCode) || GetWheelKeyDown(rec, wheelKeyIndex))

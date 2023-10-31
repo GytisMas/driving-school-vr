@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class SteeringWheel : MonoBehaviour
 {
+    public const float MAX_VAL = 32768;
     private const float MIN_VAL = -32768;
-    private const float MAX_VAL = 32768;
-    private const float MIN_STEER_ROT = -450;
     private const float MAX_STEER_ROT = 450;
-    private const float MIN_PEDAL_ROT = 60;
+    private const float MIN_STEER_ROT = -450;
     private const float MAX_PEDAL_ROT = 15;
+    private const float MIN_PEDAL_ROT = 60;
 
     [SerializeField] private Transform gasPedal;
     [SerializeField] private Transform brakePedal;
