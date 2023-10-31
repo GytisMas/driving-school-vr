@@ -24,25 +24,27 @@ public class SteeringWheel : MonoBehaviour
 
     private void RotateParts()
     {
-        transform.eulerAngles = new Vector3(
-                    transform.eulerAngles.x,
-                    transform.eulerAngles.y,
+        transform.localEulerAngles = new Vector3(
+                    transform.localEulerAngles.x,
+                    transform.localEulerAngles.y,
                     -GetPartRotation("Steering", MIN_STEER_ROT, MAX_STEER_ROT, 0)
                 );
-        gasPedal.eulerAngles = new Vector3(
+        if (gasPedal == null)
+            return;
+        gasPedal.localEulerAngles = new Vector3(
                     GetPartRotation("Gas", MIN_PEDAL_ROT, MAX_PEDAL_ROT, 1),
-                    gasPedal.eulerAngles.y,
-                    gasPedal.eulerAngles.z
+                    gasPedal.localEulerAngles.y,
+                    gasPedal.localEulerAngles.z
                 );
-        brakePedal.eulerAngles = new Vector3(
+        brakePedal.localEulerAngles = new Vector3(
                     GetPartRotation("Brake", MIN_PEDAL_ROT, MAX_PEDAL_ROT, 2),
-                    brakePedal.eulerAngles.y,
-                    brakePedal.eulerAngles.z
+                    brakePedal.localEulerAngles.y,
+                    brakePedal.localEulerAngles.z
                 );
-        clutchPedal.eulerAngles = new Vector3(
+        clutchPedal.localEulerAngles = new Vector3(
                     GetPartRotation("Clutch", MIN_PEDAL_ROT, MAX_PEDAL_ROT, 3),
-                    clutchPedal.eulerAngles.y,
-                    clutchPedal.eulerAngles.z
+                    clutchPedal.localEulerAngles.y,
+                    clutchPedal.localEulerAngles.z
                 );
     }
 

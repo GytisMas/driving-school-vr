@@ -9,6 +9,8 @@ public enum InputLabel
     UP = 1,
     DOWN = 2,
     ENTER = 3,
+    L3 = 4,
+    R3 = 5,
     ALL = 15,
 }
 public static class CustomInput
@@ -21,20 +23,24 @@ public static class CustomInput
             rec = LogitechGSDK.LogiGetStateUnity(0);
         else
             rec = default;
+        var inputRes = InputLabel.NONE;
         if (GetKeyDown(input, InputLabel.UP, KeyCode.UpArrow, 19, rec))
-            return InputLabel.UP;
+            inputRes = InputLabel.UP;
         if (GetKeyDown(input, InputLabel.DOWN, KeyCode.DownArrow, 20, rec))
-            return InputLabel.DOWN;
-        if (GetKeyDown(input, InputLabel.ENTER, 23, rec)) {
-            return InputLabel.ENTER;
-        }
-        return InputLabel.NONE;
+            inputRes = InputLabel.DOWN;
+        if (GetKeyDown(input, InputLabel.ENTER, 23, rec))
+            inputRes = InputLabel.ENTER;
+        if (GetKeyDown(input, InputLabel.L3, KeyCode.Q, 11, rec))
+            inputRes = InputLabel.L3;
+        if (GetKeyDown(input, InputLabel.R3, KeyCode.E, 10, rec))
+            inputRes = InputLabel.R3;
+        return inputRes;
     }
     
     public static float GetAxis(string axisName) 
     {
         if (!LogitechSteeringWheel.wheelConnected)
-            return 0f;
+            return 2f;
         var rec = LogitechGSDK.LogiGetStateUnity(0);
         switch (axisName) {
             case "Steering": return rec.lX;
