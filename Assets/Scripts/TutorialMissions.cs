@@ -9,9 +9,6 @@ public class TutorialMissions : MonoBehaviour
     public Toggle mission2;
     public Toggle mission3;
     public Toggle mission4;
-    public Toggle mission5;
-    public Toggle mission6;
-
     private bool startWheelDataSet = false;
     private float startWheelSteeringAxis = 0f;
     
@@ -21,10 +18,6 @@ public class TutorialMissions : MonoBehaviour
         mission2.GetComponentInChildren<Text>().text = "Press A or turn steering wheel left to steer left";
         mission3.GetComponentInChildren<Text>().text = "Press D or turn steering wheel right to steer right";
         mission4.GetComponentInChildren<Text>().text = "Press S or press on the brake pedal to stop or drive backwards";
-        mission5.gameObject.SetActive(false);
-        mission6.gameObject.SetActive(false);
-        mission5.GetComponentInChildren<Text>().text = "Press Q or L3 to show left turn signal";
-        mission6.GetComponentInChildren<Text>().text = "Press E or R3 to to show right turn signal";
 
     }
 
@@ -62,28 +55,16 @@ public class TutorialMissions : MonoBehaviour
         }
         InputLabel currentInput = CustomInput.GetInputDown(InputLabel.ALL);
 
-        if(currentInput == InputLabel.L3 && mission1.isOn)
-        {
-            mission5.isOn = true;
-            Invoke("ChangeMission", 3);
-        }
-        if (currentInput == InputLabel.R3 && mission2.isOn)
-        {
-            mission6.isOn = true;
-            Invoke("ChangeMission", 3);
-        }
         //Tokiu paciu principu bus galima su collisionais suzaist.
     }
     void ChangeMission()
     {
         if (mission1.isOn) {
             mission1.gameObject.SetActive(false);
-            mission5.gameObject.SetActive(true);
         }
         if (mission2.isOn)
         {
             mission2.gameObject.SetActive(false);
-            mission6.gameObject.SetActive(true);
         }
         if (mission3.isOn)
         {
@@ -95,17 +76,6 @@ public class TutorialMissions : MonoBehaviour
             mission4.gameObject.SetActive(false);
             
         }
-        if (mission5.isOn)
-        {
-            mission5.gameObject.SetActive(false);
-            
-        }
-        if (mission6.isOn)
-        {
-            mission6.gameObject.SetActive(false);
-            
-        }
-
     }
 
 
