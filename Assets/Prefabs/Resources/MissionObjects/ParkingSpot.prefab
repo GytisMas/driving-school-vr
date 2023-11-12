@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3060626092712338890}
   - component: {fileID: 3060626092712338933}
   - component: {fileID: 3060626092712338932}
-  - component: {fileID: 3060626092712338888}
+  - component: {fileID: 1472436030931874379}
   m_Layer: 0
   m_Name: ParkingSpot
   m_TagString: GoodCollision
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.9930601, y: 1.0001267, z: 1}
   m_Center: {x: 0.003469944, y: 0.00006341934, z: 0}
---- !u!114 &3060626092712338888
+--- !u!114 &1472436030931874379
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,6 +107,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3060626092712338935}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 575d6da9931685c4aa2697b6290a2b05, type: 3}
+  m_Script: {fileID: 11500000, guid: d8a21de1093c28841b33fd05f43c4df6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

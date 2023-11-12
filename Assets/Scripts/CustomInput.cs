@@ -8,10 +8,10 @@ public enum InputLabel
     NONE = 0,
     UP = 1,
     DOWN = 2,
-    ENTER = 3,
-    L3 = 4,
-    R3 = 5,
-    ALL = 15,
+    ENTER = 4,
+    L3 = 8,
+    R3 = 16,
+    ALL = 1+2+4+8+16,
 }
 public static class CustomInput
 {

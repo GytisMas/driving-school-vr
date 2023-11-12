@@ -7,157 +7,161 @@ using UnityEngine.EventSystems;
 using System;
 public class MissionManager : MonoBehaviour
 {
+
     //Button press task'ai
-    public KeyCode[] requiredKeys;
+
+    // public KeyCode[] requiredKeys;
     // UI checklist
-    public Toggle[] toggles;
-    public UnityAction<int> onButtonPressed;
-    public List<GameObject> allMissions;
-    public Collider[] parkingSpots;
+    // public Toggle[] toggles;
+    // public UnityAction<int> onButtonPressed;
 
-    private int currentParkingIndex = 0;
-    private int taskCount = 0;
-    private int currentMissionIndex = 0;
+    [SerializeField] private Transform taskObjectHolder;
+    private List<Task> allTasks;
 
-    void Start()
+    private int currTask = -1;
+    private bool missionStarted = false;
+
+    void Awake() 
     {
-        ActivateMissions(currentMissionIndex);
-        onButtonPressed += OnClick;
-
-        ReachLocationTask.OnParkingMissionCompleted += ParkingMissionCompleted;
-
+        allTasks = 
+            MissionBuilder
+            .GetMission1Tasks(taskObjectHolder, TaskComplete);
     }
 
-    private void Update()
+    private void TaskComplete(Task task) 
     {
-        for (int i = 0; i < requiredKeys.Length; i++)
-        {
-            if (Input.GetKeyDown(requiredKeys[i]) && !toggles[i].isOn)
-            {
-                onButtonPressed(i);
-            }
-        }
-
-        // Check if first 4 tutorial missions are completed.
-        if (taskCount == 4 && currentMissionIndex + 4 < allMissions.Count)
-        {
-            StartCoroutine(CompleteAndActivateMissions(currentMissionIndex, currentMissionIndex + 4));
-            currentMissionIndex += 4;
-            taskCount = 0;
-        }
+        DeactivateTask(task);
+        ActivateNextTask();
     }
 
-    private void ParkingMissionCompleted()
+    private void ActivateNextTask()
     {
-        // Find the index of the completed parking mission
-        int parkingMissionIndex = currentMissionIndex;
-        for (int i = 0; i < allMissions.Count; i++)
-        {
-            if (allMissions[i].activeSelf && toggles[i].isOn)
-            {
-                parkingMissionIndex = i;
-                break;
-            }
-        }
-
-        // Ensure the index is valid
-        if (parkingMissionIndex >= 0 && parkingMissionIndex < allMissions.Count)
-        {
-            toggles[parkingMissionIndex].isOn = true;
-            if (currentParkingIndex < parkingSpots.Length)
-            {
-                parkingSpots[currentParkingIndex].gameObject.SetActive(true);
-                currentParkingIndex++;
-            }
-
-            // Start coroutine to deactivate the completed mission with 2sec delay.
-            StartCoroutine(CompleteAndActivateParkingMission(parkingMissionIndex));
-
-            // Check if all parking missions are completed
-            if (currentParkingIndex >= parkingSpots.Length)
-            {
-                currentMissionIndex++;
-            }
-        }
-
-        Debug.Log(currentMissionIndex);
-    }
-    IEnumerator CompleteAndActivateMissions(int startIndex, int endIndex)
-    {
-        // Delay after button press completion
-        yield return new WaitForSeconds(2f);
-
-        // Deactivate the completed button press missions
-        DeactivateMissions(startIndex, endIndex);
-
-        // Activate the next set of missions
-        ActivateMissions(currentMissionIndex);
+        currTask++;
+        if (currTask < allTasks.Count)
+            allTasks[currTask].SetAsActive();
     }
 
-    IEnumerator CompleteAndActivateParkingMission(int completedMissionIndex)
+    private void DeactivateTask(Task task) 
     {
-        // Wait for 2 seconds before deactivating the completed mission
-        yield return new WaitForSeconds(2f);
-
-        // Deactivate the completed parking mission
-        DeactivateMissions(completedMissionIndex, completedMissionIndex + 1);
-
-        // Find the index of the next mission
-        int nextMissionIndex = completedMissionIndex + 1;
-
-        // Ensure the next mission index is valid
-        if (nextMissionIndex < allMissions.Count)
-        {
-            // Activate the next mission
-            allMissions[nextMissionIndex].SetActive(true);
-
-
-        }
+        task.SetAsInactive();
     }
-    public void OnClick(int i)
+
+    private void Update() 
     {
-        if (taskCount < 4)
-        {
-            toggles[i].isOn = true;
-            taskCount++;
+        if (!missionStarted && Input.GetKeyDown(KeyCode.G)) {
+            missionStarted = true;
+            ActivateNextTask();
         }
     }
 
-    private void ActivateMissions(int startIndex)
-    {
-        for (int i = startIndex; i < startIndex + 4; i++)
-        {
-            if (i < allMissions.Count)
-            {
-                // Check if the current mission is a parking mission
-                if (allMissions[i].GetComponent<ReachLocationTask>() != null)
-                {
-                    // Show the corresponding parking spot
-                    if (currentParkingIndex < parkingSpots.Length)
-                    {
+    // private void Update()
+    // {
+    //     for (int i = 0; i < requiredKeys.Length; i++)
+    //     {
+    //         if (Input.GetKeyDown(requiredKeys[i]) && !toggles[i].isOn)
+    //         {
+    //             onButtonPressed(i);
+    //         }
+    //     }
 
-                        parkingSpots[currentParkingIndex].gameObject.SetActive(true);
-                        currentParkingIndex++;
-                    }
-                }
+    //     // Check if first 4 tutorial tasks are completed.
+    //     if (taskCount == 4 && currTask + 4 < allTasks.Count)
+    //     {
+    //         StartCoroutine(CompleteAndActivateMissions(currTask, currTask + 4));
+    //         currTask += 4;
+    //         taskCount = 0;
+    //     }
+    // }
 
-                allMissions[i].SetActive(true);
-            }
-        }
-    }
+    // private void ParkingMissionCompleted()
+    // {
+    //     // Find the index of the completed parking mission
+    //     int parkingMissionIndex = currTask;
+    //     for (int i = 0; i < allTasks.Count; i++)
+    //     {
+    //         if (allTasks[i].activeSelf && toggles[i].isOn)
+    //         {
+    //             parkingMissionIndex = i;
+    //             break;
+    //         }
+    //     }
 
-    private void DeactivateMissions(int startIndex, int endIndex)
-    {
+    //     // Ensure the index is valid
+    //     // if (parkingMissionIndex >= 0 && parkingMissionIndex < allMissions.Count)
+    //     // {
+    //     //     toggles[parkingMissionIndex].isOn = true;
+    //     //     if (currentParkingIndex < parkingSpots.Length)
+    //     //     {
+    //     //         parkingSpots[currentParkingIndex].gameObject.SetActive(true);
+    //     //         currentParkingIndex++;
+    //     //     }
 
-        // Deactivate the completed missions
-        for (int i = startIndex; i < endIndex; i++)
-        {
-            if (i < allMissions.Count)
-            {
-                allMissions[i].SetActive(false);
-            }
-        }
-    }
+    //     //     // Start coroutine to deactivate the completed mission with 2sec delay.
+    //     //     StartCoroutine(CompleteAndActivateParkingMission(parkingMissionIndex));
+
+    //     //     // Check if all parking tasks are completed
+    //     //     if (currentParkingIndex >= parkingSpots.Length)
+    //     //     {
+    //     //         currentMissionIndex++;
+    //     //     }
+    //     // }
+
+    //     // Debug.Log(currTask);
+    // }
+
+    // IEnumerator CompleteAndActivateMissions(int startIndex, int endIndex)
+    // {
+    //     // Delay after button press completion
+    //     yield return new WaitForSeconds(2f);
+
+    //     // Deactivate the completed button press tasks
+    //     DeactivateMissions(startIndex, endIndex);
+
+    //     // Activate the next set of tasks
+    //     ActivateNextTask(currTask);
+    // }
+
+    // IEnumerator CompleteAndActivateParkingMission(int completedMissionIndex)
+    // {
+    //     // Wait for 2 seconds before deactivating the completed mission
+    //     yield return new WaitForSeconds(2f);
+
+    //     // Deactivate the completed parking mission
+    //     DeactivateMissions(completedMissionIndex, completedMissionIndex + 1);
+
+    //     // Find the index of the next mission
+    //     int nextMissionIndex = completedMissionIndex + 1;
+
+    //     // Ensure the next mission index is valid
+    //     if (nextMissionIndex < allTasks.Count)
+    //     {
+    //         // Activate the next mission
+    //         allTasks[nextMissionIndex].SetActive(true);
+    //     }
+    // }
+
+    // public void OnClick(int i)
+    // {
+    //     if (taskCount < 4)
+    //     {
+    //         toggles[i].isOn = true;
+    //         taskCount++;
+    //     }
+    // }
+
+
+    // private void DeactivateMissions(int startIndex, int endIndex)
+    // {
+
+    //     // Deactivate the completed tasks
+    //     for (int i = startIndex; i < endIndex; i++)
+    //     {
+    //         if (i < allTasks.Count)
+    //         {
+    //             allTasks[i].SetActive(false);
+    //         }
+    //     }
+    // }
 }
 
 
