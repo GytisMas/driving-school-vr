@@ -28,7 +28,7 @@ public static class CustomInput
             inputRes = InputLabel.UP;
         if (GetKeyDown(input, InputLabel.DOWN, KeyCode.DownArrow, 20, rec))
             inputRes = InputLabel.DOWN;
-        if (GetKeyDown(input, InputLabel.ENTER, 23, rec))
+        if (GetKeyDown(input, InputLabel.ENTER, KeyCode.KeypadEnter, 23, rec))
             inputRes = InputLabel.ENTER;
         if (GetKeyDown(input, InputLabel.L3, KeyCode.Q, 11, rec))
             inputRes = InputLabel.L3;

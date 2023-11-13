@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
+using UnityEngine.SceneManagement;
 public class MissionManager : MonoBehaviour
 {
 
@@ -28,6 +29,11 @@ public class MissionManager : MonoBehaviour
             .GetMission1Tasks(taskObjectHolder, TaskComplete);
     }
 
+    private void Start() 
+    {
+        ActivateNextTask();        
+    }
+
     private void TaskComplete(Task task) 
     {
         DeactivateTask(task);
@@ -39,19 +45,13 @@ public class MissionManager : MonoBehaviour
         currTask++;
         if (currTask < allTasks.Count)
             allTasks[currTask].SetAsActive();
+        else
+            SceneManager.LoadScene(0);
     }
 
     private void DeactivateTask(Task task) 
     {
         task.SetAsInactive();
-    }
-
-    private void Update() 
-    {
-        if (!missionStarted && Input.GetKeyDown(KeyCode.G)) {
-            missionStarted = true;
-            ActivateNextTask();
-        }
     }
 
     // private void Update()

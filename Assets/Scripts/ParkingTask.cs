@@ -15,12 +15,17 @@ public class ParkingTask : Task
         parkingSpotsVisited = new List<bool>();
     }
 
-    public void AddParkingSpot(Vector3 coords) 
+    public void AddParkingSpot(Vector3 coords, float yRot) 
     {
         ParkingSpot parkSpot = 
             GameObject.Instantiate(parkingSpotPrefab, coords, 
                 Quaternion.identity, taskObjectHolder)
             .GetComponent<ParkingSpot>();
+        parkSpot.transform.eulerAngles = new Vector3(
+            parkSpot.transform.eulerAngles.x,
+            yRot,
+            parkSpot.transform.eulerAngles.z
+        );
         parkingSpots.Add(parkSpot);
         parkingSpotsVisited.Add(false);
         parkSpot.gameObject.SetActive(false);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
@@ -27,6 +28,16 @@ public class MainMenu : MonoBehaviour
         } else if (currentInput == InputLabel.ENTER) {
             PressButton();
         }
+    }
+
+    public void LaunchTutorial() 
+    {
+        SceneManager.LoadScene(1);
+    }
+
+    public void LaunchLevel() 
+    {
+        SceneManager.LoadScene(2);
     }
 
     private void PressButton() 

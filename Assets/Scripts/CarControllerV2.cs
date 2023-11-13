@@ -283,21 +283,21 @@ public class CarControllerV2 : CarController
         // c < m, posA -- true
         // c > m, posA -- false
         // c > m, negA -- true
-        // c > m, negA -- false
+        // c < m, negA -- false
         bool applyTorque = 
-            carSpeed >= 0 && carSpeed < maxSpeed
-            || carSpeed >= 0 && carSpeed >= maxSpeed && accelerationInput < 0f
-            || carSpeed < 0 && carSpeed > -_maxReverseSpeed
-            || carSpeed < 0 && carSpeed <= -_maxReverseSpeed && accelerationInput > 0f;
+            (carSpeed >= 0 && carSpeed < maxSpeed)
+            || (carSpeed >= 0 && carSpeed >= maxSpeed && accelerationInput < 0f)
+            || (carSpeed < 0 && carSpeed > -_maxReverseSpeed)
+            || (carSpeed < 0 && carSpeed <= -_maxReverseSpeed && accelerationInput > 0f);
         // if (IsDriveWheel(i)) {
         //     Debug.Log($"{maxSpeed} | {applyTorque} | {Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)}");
 
         // }
-        if (accelerationInput == 0f) {
+        // if (accelerationInput == 0f) {
             DecelerationF(Wheels[i], i);
-            return;
-        }
-        else if (IsDriveWheel(i) && applyTorque &&
+            // return;
+        // }
+        if (IsDriveWheel(i) && applyTorque &&
             Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)) 
         {
             Vector3 forwardDirection = wheel.forward;
