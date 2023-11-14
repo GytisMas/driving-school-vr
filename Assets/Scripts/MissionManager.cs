@@ -46,7 +46,7 @@ public class MissionManager : MonoBehaviour
         if (currTask < allTasks.Count)
             allTasks[currTask].SetAsActive();
         else
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene("SampleScene");
     }
 
     private void DeactivateTask(Task task) 

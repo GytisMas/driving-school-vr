@@ -32,12 +32,12 @@ public class MainMenu : MonoBehaviour
 
     public void LaunchTutorial() 
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void LaunchLevel() 
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene("City");
     }
 
     private void PressButton() 
