@@ -9633,6 +9633,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2858030397462390064, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: driveTrainType
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030397462390064, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: maxSteeringAngle
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030397789013841, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030398934075998, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030398934075998, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030398934075998, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030398934075998, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2858030398934075998, guid: 6688bc3471e29c3459119216f782f522, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2858698784312751608, guid: 6688bc3471e29c3459119216f782f522, type: 3}
       propertyPath: m_Name
       value: PlayerCar
