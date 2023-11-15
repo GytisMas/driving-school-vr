@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public static class MissionBuilder 
 {
-    public static List<Task> AddReachLocationTask(List<Task> tasks, Transform holder, UnityAction<Task> onComplete
+    public static List<ActiveTask> AddReachLocationTask(List<ActiveTask> tasks, Transform holder, UnityAction<ActiveTask> onComplete
         , List<Vector3> coordsList, List<float> yRotList) 
     {
         var newTask = new ReachLocationTask(holder);
@@ -17,7 +17,7 @@ public static class MissionBuilder
         return tasks;
     }
 
-    public static List<Task> AddParkingTask(List<Task> tasks, Transform holder, UnityAction<Task> onComplete
+    public static List<ActiveTask> AddParkingTask(List<ActiveTask> tasks, Transform holder, UnityAction<ActiveTask> onComplete
         , List<Vector3> coordsList, List<float> yRotList) 
     {
         var newTask = new ParkingTask(holder);
@@ -29,7 +29,7 @@ public static class MissionBuilder
         return tasks;
     }
 
-    public static List<Task> AddButtonPressTask(List<Task> tasks, Transform holder, UnityAction<Task> onComplete
+    public static List<ActiveTask> AddButtonPressTask(List<ActiveTask> tasks, Transform holder, UnityAction<ActiveTask> onComplete
         , List<TargetButton> targetButtons) 
     {
         var newTask = new ButtonPressTask(holder);
@@ -41,9 +41,9 @@ public static class MissionBuilder
         return tasks;
     }
 
-    public static List<Task> GetTutorialTasks(Transform holder, UnityAction<Task> onComplete) 
+    public static List<ActiveTask> GetTutorialTasks(Transform holder, UnityAction<ActiveTask> onComplete) 
     {
-        var tasks = new List<Task>();
+        var tasks = new List<ActiveTask>();
         // Vector3(-4.94999981,2.74000001,6.4000001)
         tasks = AddReachLocationTask(
             tasks,
@@ -93,9 +93,9 @@ public static class MissionBuilder
         return tasks;
     }
 
-    public static List<Task> GetMission1Tasks(Transform holder, UnityAction<Task> onComplete) 
+    public static List<ActiveTask> GetMission1Tasks(Transform holder, UnityAction<ActiveTask> onComplete) 
     {
-        var tasks = new List<Task>();
+        var tasks = new List<ActiveTask>();
         // Vector3(-551.273132,3.03354359,132.85553)
         // Vector3(-537.632874,3.03354931,79.137825) -50
         // Vector3(-494.791809,3.03356099,67.6948166) 90

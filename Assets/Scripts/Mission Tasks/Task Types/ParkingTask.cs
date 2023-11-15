@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-public class ParkingTask : Task
+public class ParkingTask : ActiveTask
 {
     private GameObject parkingSpotPrefab;
     private List<ParkingSpot> parkingSpots;

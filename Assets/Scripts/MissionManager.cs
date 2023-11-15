@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using System;
 using UnityEngine.SceneManagement;
+using System.Linq;
 public class MissionManager : MonoBehaviour
 {
 
@@ -17,13 +18,14 @@ public class MissionManager : MonoBehaviour
     // public UnityAction<int> onButtonPressed;
 
     [SerializeField] private Transform taskObjectHolder;
-    private List<Task> allTasks;
+    private List<ActiveTask> allTasks;
 
     private int currTask = -1;
     private bool missionStarted = false;
 
     void Awake() 
     {
+        ActivatePassiveTasks();
         allTasks = 
             MissionBuilder
             .GetMission1Tasks(taskObjectHolder, TaskComplete);
@@ -31,10 +33,22 @@ public class MissionManager : MonoBehaviour
 
     private void Start() 
     {
-        ActivateNextTask();        
+        ActivateNextTask();
     }
 
-    private void TaskComplete(Task task) 
+    private void ActivatePassiveTasks() 
+    {
+        var passiveTaskObjects = FindObjectsOfType<PassiveTaskObject>().ToList();
+        foreach (var pTask in passiveTaskObjects)
+            pTask.onFailState += FailMission;
+    }
+
+    private void FailMission(PassiveTaskObject pObj) 
+    {
+        SceneManager.LoadScene("Test Drive");
+    }
+
+    private void TaskComplete(ActiveTask task) 
     {
         DeactivateTask(task);
         ActivateNextTask();
@@ -46,10 +60,10 @@ public class MissionManager : MonoBehaviour
         if (currTask < allTasks.Count)
             allTasks[currTask].SetAsActive();
         else
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("MainMenu");
     }
 
-    private void DeactivateTask(Task task) 
+    private void DeactivateTask(ActiveTask task) 
     {
         task.SetAsInactive();
     }

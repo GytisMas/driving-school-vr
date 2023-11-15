@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-public class ButtonPressTask : Task
+public class ButtonPressTask : ActiveTask
 {
     private GameObject buttonDetectorPrefab;
     private List<ButtonDetector> detectors;
