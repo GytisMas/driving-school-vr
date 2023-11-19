@@ -19,6 +19,7 @@ public class CarControllerV2 : CarController
     public override float accelerationMultiplier { get { return _accelerationMultiplier; } set { _accelerationMultiplier = value; } }
     [SerializeField] DriveTrain driveTrainType;
     [SerializeField] AnimationCurve powerCurve;
+    [SerializeField] float reverseAccelerationMultiplier;
     [Space]
     [Header("Steering")]
     [SerializeField] float steeringSpeed;
@@ -62,6 +63,10 @@ public class CarControllerV2 : CarController
     private bool isNextPush = false;
     private float steeringAxis = 0f;
     private float onAirOffset;
+    private bool forwardGear = true;
+    private float currentMaxSpeed;
+    private float accelerationInput = 0f;
+    private float horizontalInput = 0f;
 
     private float frontSpringStrength {
         get {
@@ -88,6 +93,7 @@ public class CarControllerV2 : CarController
     }
 
     private void Awake() {
+        currentMaxSpeed = _maxSpeed;
         wheelRadius = wheelDiameter / 2f;
         onAirOffset = (wheelDiameter - offsetRange * 2f) / 2f;
         rBody.centerOfMass = rigidBodyCenterOfMass;
@@ -113,21 +119,40 @@ public class CarControllerV2 : CarController
     //     }
     // }
 
-    public override float GetAccelerationInput()
+    private void SetCarInput()
+    {
+        SetCarGear();
+        SetAccelerationInput();
+        SetHorizontalInput();
+    }
+
+    private void SetCarGear() 
+    {
+        InputLabel pressedGearKey = CustomInput.GetInputDown(InputLabel.GEARUP | InputLabel.GEARDOWN);
+
+        // dont change gear if none 
+        // or both buttons are pressed
+        if (pressedGearKey == 0 || (pressedGearKey == (InputLabel.GEARUP | InputLabel.GEARDOWN)))
+            return;
+        forwardGear = (pressedGearKey & InputLabel.GEARUP) != 0;
+        currentMaxSpeed = forwardGear ? _maxSpeed : _maxReverseSpeed;
+    }
+
+    public void SetAccelerationInput()
     {
         if (LogitechSteeringWheel.wheelConnected) {
             float gasInput = 1 - CustomInput.GetAxisNormalised01("Gas");
             float brakeInput = 1 - CustomInput.GetAxisNormalised01("Brake");
-            return gasInput - brakeInput;
+            accelerationInput = gasInput - brakeInput;
         }
-        return Input.GetAxis("Vertical");
+        accelerationInput = Input.GetAxis("Vertical");
     }
 
-    public override float GetHorizontalInput()
+    public void SetHorizontalInput()
     {
         if (LogitechSteeringWheel.wheelConnected)
-            return CustomInput.GetAxisNormalised("Steering");
-        return Input.GetAxis("Horizontal");
+            horizontalInput = CustomInput.GetAxisNormalised("Steering");
+        horizontalInput = Input.GetAxis("Horizontal");
     }
 
     public void TurnNextPushOn() {
@@ -172,15 +197,15 @@ public class CarControllerV2 : CarController
         );
     }
 
-    void ChangeSteeringDirection() {
-        float currentSteerAngle = maxSteeringAngle * GetHorizontalInput();
+    void ChangeWheelDirection() {
+        float currentSteerAngle = maxSteeringAngle * horizontalInput;
         Quaternion target = Quaternion.Euler(0, currentSteerAngle, 0f);
         // Debug.Log($"{target.eulerAngles} {allWheelsTarget[0].rotation.eulerAngles}");
         Wheels[0].localRotation = Quaternion.Slerp(Wheels[0].localRotation, target,  Time.fixedDeltaTime * steeringSpeed);
         Wheels[1].localRotation = Quaternion.Slerp(Wheels[1].localRotation, target,  Time.fixedDeltaTime * steeringSpeed);
     }
 
-    private void ManageForces()
+    private void SetForces()
     {
         int wheelsTouching = 0;
         // Debug.Log($"Speed: {Vector3.Dot(transform.forward, rBody.velocity)}");
@@ -188,10 +213,14 @@ public class CarControllerV2 : CarController
         {
             bool thisWheelTouching = SteeringF(Wheels[i], i);
             SuspensionF(Wheels[i], i);
-            AccelerationF(Wheels[i], i);            
-
+            AccelerationF(Wheels[i], i);
             wheelsTouching = thisWheelTouching ? wheelsTouching + 1 : wheelsTouching;
         }
+    }
+    private void SetWheelMeshes()
+    {
+        for (int i = 0; i < WheelMeshes.Count; i++)
+            SetWheelMesh(WheelMeshes[i], Offsets[i]);
     }
 
     private bool SuspensionF(Transform wheel, int i)
@@ -264,7 +293,7 @@ public class CarControllerV2 : CarController
             Vector3 worldVel = rBody.GetPointVelocity(wheel.position);
             float steeringVel = Vector3.Dot(forwardDirection, worldVel);
             float desiredVelChange = -steeringVel * fTireGripFactor;
-            float desiredAccel = desiredVelChange * 0.3f;
+            float desiredAccel = desiredVelChange * 0.1f;
             // Debug.Log($"Force: {i} {forwardDirection} {worldVel} {steeringVel} {desiredAccel} {forwardDirection * desiredAccel}");
             // Debug.Log($"Force: {i} {steeringVel} {forwardDirection * tireMass * desiredAccel}");
             rBody.AddForceAtPosition(forwardDirection * desiredAccel, wheel.position, ForceMode.Acceleration);
@@ -272,37 +301,38 @@ public class CarControllerV2 : CarController
     }
     private void AccelerationF(Transform wheel, int i) 
     {
-        float accelerationInput = GetAccelerationInput();
         float carSpeed = Vector3.Dot(transform.forward, rBody.velocity);
+        float carSpeedAbs = Mathf.Abs(carSpeed);
         // carSpeedText.text = Mathf.RoundToInt(carSpeed).ToString();
-        bool predFWD = driveTrainType == DriveTrain.FWD;
         bool predAWD = driveTrainType == DriveTrain.AWD;
-        bool predRWD = driveTrainType == DriveTrain.RWD;
-        int countDriveWheels = predFWD || predRWD ? 2 : 4;
-        // bool one = true;
-        // c < m, posA -- true
-        // c > m, posA -- false
-        // c > m, negA -- true
-        // c < m, negA -- false
-        bool applyTorque = 
-            (carSpeed >= 0 && carSpeed < maxSpeed)
-            || (carSpeed >= 0 && carSpeed >= maxSpeed && accelerationInput < 0f)
-            || (carSpeed < 0 && carSpeed > -_maxReverseSpeed)
-            || (carSpeed < 0 && carSpeed <= -_maxReverseSpeed && accelerationInput > 0f);
+        int countDriveWheels = predAWD ? 4 : 2;
+        // bool applyTorque = 
+        //     (carSpeed >= 0 && carSpeed < maxSpeed)
+        //     || (carSpeed >= 0 && carSpeed >= maxSpeed && accelerationInput < 0f)
+        //     || (carSpeed < 0 && carSpeed > -_maxReverseSpeed)
+        //     || (carSpeed < 0 && carSpeed <= -_maxReverseSpeed && accelerationInput > 0f);
+
         // if (IsDriveWheel(i)) {
         //     Debug.Log($"{maxSpeed} | {applyTorque} | {Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)}");
-
         // }
         // if (accelerationInput == 0f) {
             DecelerationF(Wheels[i], i);
             // return;
         // }
+
+        bool applyTorque = 
+            (accelerationInput > 0f && carSpeed < currentMaxSpeed)
+            || (accelerationInput < 0f && carSpeed > 0f && forwardGear)
+            || (accelerationInput < 0f && carSpeed < 0f && !forwardGear);
         if (IsDriveWheel(i) && applyTorque &&
             Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)) 
         {
-            Vector3 forwardDirection = wheel.forward;
+            Vector3 forwardDirection = forwardGear ? wheel.forward : -wheel.forward;
+            float gearMult = forwardGear 
+                ? powerCurve.Evaluate(carSpeedAbs / currentMaxSpeed)
+                : reverseAccelerationMultiplier;
             float torque = 
-                powerCurve.Evaluate(carSpeed / maxSpeed) 
+                  gearMult
                 * accelerationInput 
                 * accelerationMultiplier
                 / countDriveWheels;
@@ -316,17 +346,15 @@ public class CarControllerV2 : CarController
     }    
 
     void FixedUpdate()
-    {        
+    {
         // Time.timeScale = timeScale;
-        ManageForces();
-        ChangeSteeringDirection();
-
-        for (int i = 0; i < WheelMeshes.Count; i++)
-            SetWheelMesh(WheelMeshes[i], Offsets[i]);
+        SetForces();
+        ChangeWheelDirection();
+        SetWheelMeshes();
     }
 
     private void Update() {
-        // Debug.Log(rBody.centerOfMass);
+        SetCarInput();
     }
 
     private void OnDrawGizmos() {
