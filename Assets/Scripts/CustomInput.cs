@@ -42,9 +42,9 @@ public class CustomInput : MonoBehaviour
             inputRes = InputLabel.L3;
         if (GetKeyDown(input, InputLabel.R3, KeyCode.E, 10))
             inputRes = InputLabel.R3;
-        if (GetKeyDown(input, InputLabel.GEARUP, KeyCode.M))
+        if (GetKeyDown(input, InputLabel.GEARUP, KeyCode.M, 4))
             inputRes = InputLabel.GEARUP;
-        if (GetKeyDown(input, InputLabel.GEARDOWN, KeyCode.N))
+        if (GetKeyDown(input, InputLabel.GEARDOWN, KeyCode.N, 5))
             inputRes = InputLabel.GEARDOWN;
         return inputRes;
     }

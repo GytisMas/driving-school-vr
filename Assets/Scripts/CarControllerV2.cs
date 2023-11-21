@@ -21,6 +21,7 @@ public class CarControllerV2 : CarController
     [SerializeField] DriveTrain driveTrainType;
     [SerializeField] AnimationCurve powerCurve;
     [SerializeField] float reverseAccelerationMultiplier;
+    [SerializeField] float brakingRate = 0.5f;
     [Space]
     [Header("Steering")]
     [SerializeField] float steeringSpeed;
@@ -132,15 +133,16 @@ public class CarControllerV2 : CarController
             float gasInput = 1 - CustomInput.GetAxisNormalised01("Gas");
             float brakeInput = 1 - CustomInput.GetAxisNormalised01("Brake");
             accelerationInput = gasInput - brakeInput;
-        }
-        accelerationInput = Input.GetAxis("Vertical");
+        } else
+            accelerationInput = Input.GetAxis("Vertical");
     }
 
     public void SetHorizontalInput()
     {
         if (LogitechSteeringWheel.wheelConnected)
             horizontalInput = CustomInput.GetAxisNormalised("Steering");
-        horizontalInput = Input.GetAxis("Horizontal");
+        else
+            horizontalInput = Input.GetAxis("Horizontal");
     }
 
     public void TurnNextPushOn() {
@@ -193,18 +195,6 @@ public class CarControllerV2 : CarController
         Wheels[1].localRotation = Quaternion.Slerp(Wheels[1].localRotation, target,  Time.fixedDeltaTime * steeringSpeed);
     }
 
-    private void SetForces()
-    {
-        skipDecel = true;
-        // Debug.Log($"Speed: {Vector3.Dot(transform.forward, rBody.velocity)}");
-        // Debug.Log($"{steeringStrs[0]:0.00f} {steeringStrs[1]:0.00f} {steeringStrs[2]:0.00f} {steeringStrs[3]:0.00f} ");
-        SteeringF();
-        for (int i = 0; i < Wheels.Count; i++)
-        {
-            SuspensionF(Wheels[i], i);
-            AccelerationF(Wheels[i], i);
-        }
-    }
     private void SetWheelMeshes()
     {
         for (int i = 0; i < WheelMeshes.Count; i++)
@@ -223,6 +213,19 @@ public class CarControllerV2 : CarController
         }
     }
 
+    private void SetForces()
+    {
+        skipDecel = true;
+        // Debug.Log($"Speed: {Vector3.Dot(transform.forward, rBody.velocity)}");
+        // Debug.Log($"{steeringStrs[0]:0.00f} {steeringStrs[1]:0.00f} {steeringStrs[2]:0.00f} {steeringStrs[3]:0.00f} ");
+        SteeringF();
+        for (int i = 0; i < Wheels.Count; i++)
+        {
+            SuspensionF(Wheels[i], i);
+            AccelerationF(Wheels[i], i);
+        }
+    }
+
     private bool SuspensionF(Transform wheel, int i)
     {
         bool res = false;
@@ -232,7 +235,6 @@ public class CarControllerV2 : CarController
         Offsets[i] = onAirOffset;
         if (Physics.Raycast(SuspensionTops[i].position, -springDirection, out hit, offsetRange * 2, colLayerMask))
         {
-            // Debug.Log("AA");
             float springStrength;
             float springDamper;
             // rear wheel
@@ -244,27 +246,20 @@ public class CarControllerV2 : CarController
                 springDamper = frontSpringDamper;
             }
             Offsets[i] = onAirOffset + offsetRange * 2 - hit.distance;
-            // if (i == 0)
-                // Debug.Log($"Sus {i} | {Offsets[i]}");
             Vector3 worldVel = rBody.GetPointVelocity(wheel.position);
             float vel = Vector3.Dot(springDirection, worldVel);
             float force = (Offsets[i] * springStrength) - (vel * springDamper);
-            rBody.AddForceAtPosition(Vector3.up * force * Mathf.Cos(Mathf.Deg2Rad * wheel.rotation.eulerAngles.x), wheel.position);
+            force *= Mathf.Cos(Mathf.Deg2Rad * wheel.rotation.eulerAngles.x);
+            rBody.AddForceAtPosition(Vector3.up * force, wheel.position);
             res = true;
-            // if (i == 0)
-                // Debug.Log($"force {i} force: {Vector3.up * force * Mathf.Cos(Mathf.Deg2Rad * wheel.rotation.eulerAngles.x)}");
-                // Debug.Log($"force {i} | spring {Offsets[i]} {springStrength} {Offsets[i] * springStrength} | damper {vel} {springDamper} {vel * springDamper} | res {force} | force: {Vector3.up * force} {Vector3.up * force * Mathf.Cos(Mathf.Deg2Rad * wheel.rotation.eulerAngles.x)}");
         }
-        // res = true;
         return res;
     }
     private void SteeringF()
     {
-        // suskaiciuot velocity sum ant visu ratu
-        // pasidaryt force ratios
-        // applyint pagal force ratio, turet max reiksme maxGrip
         float totalVel = 0f;
         int wheelsTouchingCount = 0;
+
         for (int i = 0; i < Wheels.Count; i++) {
             var wheel = Wheels[i];
             wheelsTouching[i] = false;
@@ -279,23 +274,20 @@ public class CarControllerV2 : CarController
         }
         
         float localMaxGrip = (float)(maxGrip * (wheelsTouchingCount / 4f));
-        float averageVel = totalVel / 4f;
-        // Debug.Log($"maxgrip {maxGrip} {(float)(maxGrip * (3 / 4f))}");
-        
-        float velUsed = averageVel < localMaxGrip ? averageVel : localMaxGrip;
-        Debug.Log($"velused {velUsed}");
+        float averageVel = totalVel / 4f;        
+        float cappedVel = averageVel < localMaxGrip ? averageVel : localMaxGrip;
+
         for (int i = 0; i < Wheels.Count; i++) {
             if (!wheelsTouching[i])
                 continue;
             var wheel = Wheels[i];
             Vector3 steeringDirection = wheel.right;
-            float forceStr = velUsed * (steeringStrs[i] / totalVel);
+            float forceStr = cappedVel * (steeringStrs[i] / totalVel);
             rBody.AddForceAtPosition(steeringDirection * forceStr, wheel.position, ForceMode.VelocityChange);
         }
     }
     private void DecelerationF(Transform wheel, int i) 
     {
-
         if (Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask))
         {
             Vector3 forwardDirection = wheel.forward;
@@ -306,37 +298,53 @@ public class CarControllerV2 : CarController
             float desiredVelChange = decelerationRate;
             if (accelVelAbs <= .2f)
                  desiredVelChange = accelVelAbs / 4f;
-            // Debug.Log($"Force: {i} {forwardDirection} {worldVel} {steeringVel} {desiredAccel} {forwardDirection * desiredAccel}");
-            // Debug.Log($"Force: {i} {steeringVel} {forwardDirection * tireMass * desiredAccel}");
             rBody.AddForceAtPosition(-forwardDirection * desiredVelChange * reverseMult, wheel.position, ForceMode.VelocityChange);
         }
     }
+
     private void AccelerationF(Transform wheel, int i) 
     {
         carSpeed = Vector3.Dot(transform.forward, rBody.velocity);
-        if (accelerationInput <= 0f) {
+        if (accelerationInput == 0f) {
             DecelerationF(Wheels[i], i);
-            return;
         }
         float carSpeedAbs = Mathf.Abs(carSpeed);
         bool predAWD = driveTrainType == DriveTrain.AWD;
         int countDriveWheels = predAWD ? 4 : 2;
         bool applyTorque = 
-            (accelerationInput > 0f && carSpeed < currentMaxSpeed)
-            || (accelerationInput < 0f && carSpeed > 0f && forwardGear)
-            || (accelerationInput < 0f && carSpeed < 0f && !forwardGear);
+            accelerationInput != 0f 
+            || (accelerationInput > 0f && (
+                    (forwardGear && carSpeed < currentMaxSpeed)
+                    || (!forwardGear && carSpeed > currentMaxSpeed)
+                )
+            );
         if (IsDriveWheel(i) && applyTorque &&
             Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)) 
         {
-            Vector3 forwardDirection = forwardGear ? wheel.forward : -wheel.forward;
+            // Vector3 forwardDirection = forwardGear ? wheel.forward : -wheel.forward;
+            Vector3 forwardDirection = wheel.forward;
             float gearMult = forwardGear 
                 ? powerCurve.Evaluate(carSpeedAbs / currentMaxSpeed)
-                : reverseAccelerationMultiplier;
+                : -reverseAccelerationMultiplier;            
+
             float torque = 
                   gearMult
                 * accelerationInput 
                 * accelerationMultiplier
                 / countDriveWheels;
+
+            if (accelerationInput < 0f) {
+                if (carSpeed == 0f)
+                    return;
+                torque = brakingRate;
+
+                // Possible undefined behaviour if not all 
+                // driving wheels are touching ground
+                if (torque > carSpeedAbs / countDriveWheels)
+                    torque = carSpeedAbs / countDriveWheels;
+                if (carSpeed > 0f)
+                    torque *= -1f;
+            }
             rBody.AddForceAtPosition(forwardDirection * torque, wheel.position, ForceMode.VelocityChange);
         }
     }    
