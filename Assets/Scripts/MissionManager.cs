@@ -37,6 +37,7 @@ public class MissionManager : MonoBehaviour
 
     private void FailMission(PassiveTaskObject pObj) 
     {
+        Debug.Log("Failed mission");
         SceneManager.LoadScene("Test Drive");
     }
 

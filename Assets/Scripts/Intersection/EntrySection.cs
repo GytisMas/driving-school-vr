@@ -13,8 +13,18 @@ public class EntrySection : Section
 
     private void OnTriggerEnter(Collider other) 
     {
-        if (other.gameObject.tag == "Car") {            
+        if (other.gameObject.tag == "Car") {    
+            AddCarToZone(other.transform);        
             onEntry?.Invoke(this);
+        } else if (other.gameObject.tag == "AICar") {            
+            AddCarToZone(other.transform);        
+        }
+    }
+
+    private void OnTriggerExit(Collider other) 
+    {
+        if (other.gameObject.tag == "Car" || other.gameObject.tag == "AICar") {
+            RemoveCarFromZone(other.transform);
         }
     }
 

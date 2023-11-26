@@ -16,6 +16,7 @@ public class ExitSection : Section
     private void OnTriggerEnter(Collider other) 
     {
         if (other.gameObject.tag == "Car") {
+            onZoneEntry?.Invoke(this, other.transform);
             bool hasValidEntry = false;
             foreach (var e in ValidEntrySections) {
                 if (e.playerHasEntered) {
@@ -24,8 +25,9 @@ public class ExitSection : Section
                 }
             }
             
-            if (!hasValidEntry)
+            if (!hasValidEntry) {
                 onFail?.Invoke();
+            }
             onSuccessfulPass?.Invoke();
         }
     }
