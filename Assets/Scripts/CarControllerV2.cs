@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-// TODO: padaryt braking force (irgi velChange maybe)
 public class CarControllerV2 : CarController
 {
     enum DriveTrain {
@@ -56,6 +55,8 @@ public class CarControllerV2 : CarController
     [SerializeField] List<Transform> SuspensionTops;
     public Text carSpeedText;
 
+    public bool aiDriving = false;
+
     List<float> Offsets = new List<float> {
         0f, 0f, 0f, 0f
     };
@@ -72,10 +73,15 @@ public class CarControllerV2 : CarController
     private float horizontalInput = 0f;
     private float carSpeed;
     private float wheelLength;
-    private bool skipDecel = false;
 
     private float[] steeringStrs = new float[4];
     private bool[] wheelsTouching = new bool[4];
+
+    public float CarSpeed {
+        get {
+            return carSpeed;
+        }
+    }
 
     private float frontSpringStrength {
         get {
@@ -101,12 +107,21 @@ public class CarControllerV2 : CarController
         }
     }
 
-    private void Awake() {
+    private void Awake() 
+    {
         currentMaxSpeed = _maxSpeed;
         wheelLength = wheelDiameter * Mathf.PI;
         wheelRadius = wheelDiameter / 2f;
         onAirOffset = (wheelDiameter - offsetRange * 2f) / 2f;
         rBody.centerOfMass = rigidBodyCenterOfMass;
+    }
+
+    public void SetCarInputAI(bool p_forwardGear, float p_maxSpeed, float p_accelerationInput, float p_horizontalInput) 
+    {
+        forwardGear = p_forwardGear;
+        currentMaxSpeed = p_maxSpeed;
+        accelerationInput = p_accelerationInput;
+        horizontalInput = p_horizontalInput;
     }
 
     private void SetCarInput()
@@ -145,30 +160,8 @@ public class CarControllerV2 : CarController
             horizontalInput = Input.GetAxis("Horizontal");
     }
 
-    public void TurnNextPushOn() {
-        isNextPush = true;
-    }
-
-    bool IsDriveWheel(int wheelIndex) {
-        if (driveTrainType == DriveTrain.AWD)
-            return wheelIndex >= 0;
-        else if (driveTrainType == DriveTrain.FWD)
-            return wheelIndex <= 1;
-        else if (driveTrainType == DriveTrain.RWD)
-            return wheelIndex >= 2;
-        Debug.LogWarning("DriveTrain not one of detectable types");
-        return false;
-    }
-
-    void SetWheelPos(Transform wheelT, float offset) {
-        wheelT.localPosition = new Vector3(
-            wheelT.localPosition.x,
-            offsetRange - offset + wheelRadius,
-            wheelT.localPosition.z
-        );
-    }
-
-    void SetWheelMesh(Transform wheelMesh, float offset) {
+    void SetWheelMesh(Transform wheelMesh, float offset) 
+    {
         float localPosY = wheelMesh.localPosition.y;
         float diff = offset - localPosY;
         if (diff < 0.01f && diff > -0.01f) // too close to zero
@@ -187,7 +180,8 @@ public class CarControllerV2 : CarController
         );
     }
 
-    void ChangeWheelDirection() {
+    void ChangeWheelDirection() 
+    {
         float currentSteerAngle = maxSteeringAngle * horizontalInput;
         Quaternion target = Quaternion.Euler(0, currentSteerAngle, 0f);
         // Debug.Log($"{target.eulerAngles} {allWheelsTarget[0].rotation.eulerAngles}");
@@ -213,11 +207,8 @@ public class CarControllerV2 : CarController
         }
     }
 
-    private void SetForces()
+    private void ApplyForces()
     {
-        skipDecel = true;
-        // Debug.Log($"Speed: {Vector3.Dot(transform.forward, rBody.velocity)}");
-        // Debug.Log($"{steeringStrs[0]:0.00f} {steeringStrs[1]:0.00f} {steeringStrs[2]:0.00f} {steeringStrs[3]:0.00f} ");
         SteeringF();
         for (int i = 0; i < Wheels.Count; i++)
         {
@@ -255,6 +246,7 @@ public class CarControllerV2 : CarController
         }
         return res;
     }
+    
     private void SteeringF()
     {
         float totalVel = 0f;
@@ -272,10 +264,14 @@ public class CarControllerV2 : CarController
                 totalVel += Mathf.Abs(steeringStrs[i]);
             }
         }
+        if (totalVel == 0f)
+            return;
         
         float localMaxGrip = (float)(maxGrip * (wheelsTouchingCount / 4f));
         float averageVel = totalVel / 4f;        
         float cappedVel = averageVel < localMaxGrip ? averageVel : localMaxGrip;
+
+        // Debug.Log($"{wheelsTouching[0]} {cappedVel} {steeringStrs[0]} {totalVel} {Wheels[0].right}");
 
         for (int i = 0; i < Wheels.Count; i++) {
             if (!wheelsTouching[i])
@@ -283,9 +279,11 @@ public class CarControllerV2 : CarController
             var wheel = Wheels[i];
             Vector3 steeringDirection = wheel.right;
             float forceStr = cappedVel * (steeringStrs[i] / totalVel);
+            // Debug.Log($"{cappedVel} * ({steeringStrs[i]} / {totalVel}) = {forceStr} | {steeringDirection * forceStr}");
             rBody.AddForceAtPosition(steeringDirection * forceStr, wheel.position, ForceMode.VelocityChange);
         }
     }
+    
     private void DecelerationF(Transform wheel, int i) 
     {
         if (Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask))
@@ -312,7 +310,7 @@ public class CarControllerV2 : CarController
         bool predAWD = driveTrainType == DriveTrain.AWD;
         int countDriveWheels = predAWD ? 4 : 2;
         bool applyTorque = 
-            accelerationInput != 0f 
+            accelerationInput < 0f 
             || (accelerationInput > 0f && (
                     (forwardGear && carSpeed < currentMaxSpeed)
                     || (!forwardGear && carSpeed > currentMaxSpeed)
@@ -349,26 +347,40 @@ public class CarControllerV2 : CarController
         }
     }    
 
-    void FixedUpdate()
+    bool IsDriveWheel(int wheelIndex) 
     {
-        // Time.timeScale = timeScale;
-        SetForces();
+        if (driveTrainType == DriveTrain.AWD)
+            return wheelIndex >= 0;
+        else if (driveTrainType == DriveTrain.FWD)
+            return wheelIndex <= 1;
+        else if (driveTrainType == DriveTrain.RWD)
+            return wheelIndex >= 2;
+        Debug.LogWarning("DriveTrain not one of detectable types");
+        return false;
+    }
+    
+    void FixedUpdate() 
+    {
+        ApplyForces();
         ChangeWheelDirection();
         SetWheelMeshes();
         RotateWheelMeshes();
     }
 
-    private void Update() {
-        SetCarInput();
+    private void Update() 
+    {
+        if (!aiDriving)
+            SetCarInput();
     }
 
-    private void OnDrawGizmos() {
+    private void OnDrawGizmos() 
+    {
         // foreach (var wheel in allWheelsTarget) {
             // Debug.DrawRay(transform.position, transform.forward.normalized * 5f, Color.red);
         // Debug.DrawRay(transform.position, Quaternion.Euler(-30, 0, 0) * transform.forward.normalized * 4f, Color.blue);
         // }
-        Debug.DrawRay(transform.position, transform.forward * 10f, Color.cyan);
-        for (int i = 0; i < Wheels.Count; i++) {
+        // Debug.DrawRay(transform.position, transform.forward * 10f, Color.cyan);
+        // for (int i = 0; i < Wheels.Count; i++) {
             // Debug.DrawRay(Wheels[i].position, Wheels[i].up.normalized * 2f, Color.red);
             // Debug.DrawRay(Wheels[i].position, SpringVectors[i].normalized * .2f, Color.yellow);
 
@@ -377,9 +389,9 @@ public class CarControllerV2 : CarController
             // Debug.DrawRay(Wheels[i].position, Quaternion.AngleAxis(-angleForFront, Wheels[i].right) * Wheels[i].up * 2f, Color.green);
 
             // up, right, forward
-            Debug.DrawRay(Wheels[i].position, Wheels[i].up * 2f, Color.red);
-            Debug.DrawRay(Wheels[i].position, Wheels[i].right * 2f, Color.green);
-            Debug.DrawRay(Wheels[i].position, Wheels[i].forward * 2f, Color.blue);
-        }
+        //     Debug.DrawRay(Wheels[i].position, Wheels[i].up * 2f, Color.red);
+        //     Debug.DrawRay(Wheels[i].position, Wheels[i].right * 2f, Color.green);
+        //     Debug.DrawRay(Wheels[i].position, Wheels[i].forward * 2f, Color.blue);
+        // }
     }
 }

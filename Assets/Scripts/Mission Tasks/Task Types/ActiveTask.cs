@@ -1,9 +1,10 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class ActiveTask : Task
 {
     
-    protected bool active = false;
+    public bool active { get; protected set; }
     public ActiveTask(Transform holder) : base(holder)
     {
         active = false;

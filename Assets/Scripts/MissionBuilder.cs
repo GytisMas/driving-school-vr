@@ -1,10 +1,40 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
 public static class MissionBuilder 
 {
+
+    private static List<ActiveTask> AddAICarRoutine(List<ActiveTask> tasks, float _timeDelay, Transform holder
+        , List<int> scenarioIDs, List<bool> destroyAfterList, UnityAction<PassiveTaskObject> onFailState)
+    {
+        if (scenarioIDs == null 
+         || scenarioIDs.Count < 1 
+         || destroyAfterList == null 
+         || destroyAfterList.Count != scenarioIDs.Count) {
+            Debug.LogWarning("Driving routine not created successfully");
+            return tasks;
+        }
+
+        var newTask = new AICarRoutine(holder) {
+            timeDelay = _timeDelay
+        };
+
+        for (int i = 0; i < scenarioIDs.Count; i++) {
+            int scenarioID = scenarioIDs[i];
+            bool destroyAfter = destroyAfterList[i];
+            newTask.AddDrivingScenario(
+                DrivingScenarioBuilder.GetActionList(scenarioID), 
+                DrivingScenarioBuilder.GetStartVector(scenarioID), 
+                DrivingScenarioBuilder.GetStartRotation(scenarioID), 
+                destroyAfter, onFailState);
+        }
+        tasks.Add(newTask);
+        return tasks;
+    }
+
     public static List<ActiveTask> AddReachLocationTask(List<ActiveTask> tasks, Transform holder, UnityAction<ActiveTask> onComplete
         , List<Vector3> coordsList, List<float> yRotList) 
     {
@@ -93,7 +123,8 @@ public static class MissionBuilder
         return tasks;
     }
 
-    public static List<ActiveTask> GetMission1Tasks(Transform holder, UnityAction<ActiveTask> onComplete) 
+    public static List<ActiveTask> GetMission1Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
+        UnityAction<PassiveTaskObject> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         // Vector3(-551.273132,3.03354359,132.85553)
@@ -101,6 +132,18 @@ public static class MissionBuilder
         // Vector3(-494.791809,3.03356099,67.6948166) 90
         // Vector3(-427.350616,3.03352642,66.8543625) 90
         // park Vector3(-395.799652,1.74467468,62.9536514) 0
+        tasks = AddAICarRoutine(
+            tasks,
+            2f,
+            holder,
+            new() { 
+                1, 1, 1
+            },
+            new() {
+                false, true, true
+            }, 
+            onFailState
+        );
         tasks = AddReachLocationTask(
             tasks,
             holder, 
@@ -117,7 +160,7 @@ public static class MissionBuilder
             holder, 
             onComplete,
             new() {
-                new Vector3(-537.632874f,3.03354931f,79.137825f)
+                new Vector3(-537.632874f, 3.03354931f, 79.137825f)
             },
             new() {
                 -50f
@@ -157,6 +200,5 @@ public static class MissionBuilder
             }
         );
         return tasks;
-
     }
 }

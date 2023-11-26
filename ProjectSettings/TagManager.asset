@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GoodCollision
   - Car
+  - AICar
   layers:
   - Default
   - TransparentFX
