@@ -30,7 +30,7 @@ public class MissionManager : MonoBehaviour
         else
             allTasks =
                 MissionBuilder
-                .GetMission1Tasks(taskObjectHolder, TaskComplete, FailMission);
+                .GetMissionTasks(1, taskObjectHolder, TaskComplete, FailMission);
     }
 
     private void Start() 

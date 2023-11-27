@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,8 +36,18 @@ public class Intersection : PassiveTaskObject
             if (entry.mainRoad)
                 MainSections.Add(entry);
         }
+        foreach (var inSec in InsideSections) {
+            inSec.checkIfSameEntry += CheckFirstEntry;
+        }
         foreach (var exit in ExitSections)
             exit.onSuccessfulPass += PassComplete;
+    }
+
+    private void CheckFirstEntry(Transform t, Section s)
+    {
+        if (!SectionEntries.ContainsKey(t)
+         || SectionEntries[t][0] != s)
+            onFailState?.Invoke(this);
     }
 
     private void CheckEntry(EntrySection entry)

@@ -12,7 +12,7 @@ public class ReachLocationTask : ActiveTask
         locationSpotPrefab = (GameObject)Resources.Load("MissionObjects/LocationToEnter");
     }
 
-    public void AddLocationSpot(Vector3 coords, float yRot) 
+    public void AddLocationSpot(Vector3 coords, float yRot, float width = 5f) 
     {
         locationSpot = 
             GameObject.Instantiate(locationSpotPrefab, coords, 
@@ -23,6 +23,9 @@ public class ReachLocationTask : ActiveTask
             yRot,
             locationSpot.transform.eulerAngles.z
         );
+        locationSpot.transform.localScale = new Vector3(5f,
+            locationSpot.transform.localScale.y,
+            locationSpot.transform.localScale.z);
         locationSpot.gameObject.SetActive(false);
         locationSpot.onSuccess += DetectReachedSpot;
     }

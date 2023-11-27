@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum RelativeToFirst 
 {
@@ -16,6 +17,7 @@ public class InsideSection : Section
     [SerializeField] private List<Section> YieldFirst = new List<Section>(); 
     [SerializeField] private List<Section> YieldStraight = new List<Section>(); 
     [SerializeField] private List<Section> YieldLeftTurn = new List<Section>();
+    [HideInInspector] public UnityAction<Transform, Section> checkIfSameEntry;
     private List<RelativeToFirst> CarsInZoneDoingLeftTurn = new List<RelativeToFirst>();
     private List<bool> CanCheckCar = new List<bool>();
 
@@ -83,7 +85,8 @@ public class InsideSection : Section
             foreach(var section in YieldTo) {
                 int carCount = section.CarsInZoneWithout(other.transform);                    
                 if (carCount > 0) {
-                    onFail?.Invoke();
+                    // intersection.dictionary(transform)[0] turi dar nesutapt su tikrinama sekcija
+                    checkIfSameEntry?.Invoke(other.transform, section);
                 }
             }
         }
