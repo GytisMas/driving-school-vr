@@ -73,7 +73,8 @@ public class CarControllerV2 : CarController
     private float horizontalInput = 0f;
     private float carSpeed;
     private float wheelLength;
-
+    public float Carspeed => carSpeed;
+    public float AccelerationInput => accelerationInput;
     private float[] steeringStrs = new float[4];
     private bool[] wheelsTouching = new bool[4];
 
