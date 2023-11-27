@@ -108,6 +108,17 @@ public static class MissionBuilder
         return tasks;
     }
 
+    public static void SetPlayerCarStartPos(int index, Transform t) 
+    {
+        switch (index) {
+            case 1:
+                t.position = new Vector3(-552,1f,165f);
+                t.eulerAngles = new Vector3(0f, 180f, 0f);
+                t.GetComponent<Rigidbody>().velocity = Vector3.zero;
+                break;
+        }
+    } 
+
     private static List<ActiveTask> GetMission1Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
         UnityAction<PassiveTaskObject> onFailState) 
     {

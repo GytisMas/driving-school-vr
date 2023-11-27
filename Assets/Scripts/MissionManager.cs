@@ -10,6 +10,7 @@ using System.Linq;
 public class MissionManager : MonoBehaviour
 {
     [SerializeField] private Transform taskObjectHolder;
+    [SerializeField] private Transform playerCar;
     private List<ActiveTask> allTasks;
 
     private int currTask = -1;
@@ -23,14 +24,17 @@ public class MissionManager : MonoBehaviour
 
     private void SetTasks()
     {
+        int missionIndex = 1;
         if (SceneManager.GetActiveScene().name == "ParkingLot")
             allTasks =
                 MissionBuilder
                 .GetTutorialTasks(taskObjectHolder, TaskComplete);
-        else
-            allTasks =
-                MissionBuilder
-                .GetMissionTasks(1, taskObjectHolder, TaskComplete, FailMission);
+        else {
+            allTasks = MissionBuilder.GetMissionTasks(
+                missionIndex, taskObjectHolder, TaskComplete, FailMission);
+            MissionBuilder.SetPlayerCarStartPos(missionIndex, playerCar);
+        }
+            
     }
 
     private void Start() 
