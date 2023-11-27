@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,12 +7,12 @@ public class WayPointNavigator : MonoBehaviour
 {
 
     PersonController controller;
-        public Waypoint currentWaypoint;
+    public Waypoint currentWaypoint;
     int direction;
     // Start is called before the first frame update
     void Start()
     {
-        direction = Mathf.RoundToInt(Random.Range(0f, 1f));
+        direction = Mathf.RoundToInt(UnityEngine.Random.Range(0f, 1f));
         controller.SetDestination(currentWaypoint.GetPosition());
     }
 
@@ -22,16 +23,22 @@ public class WayPointNavigator : MonoBehaviour
 
         if (controller.reachedDestination)
         {
+
             bool shouldBranch = false;
-            if(currentWaypoint.branches != null && currentWaypoint.branches.Count>0)
+            if(currentWaypoint.branches != null)
             {
-                shouldBranch = Random.Range(0f, 1f) <= currentWaypoint.branchRatio ? true : false;
+                if(currentWaypoint.branches.Count > 0)
+                {
+                    shouldBranch = UnityEngine.Random.Range(0f, 1f) <= currentWaypoint.branchRatio ? true : false;
+                }
+              
 
             }
 
             if (shouldBranch)
             {
-                currentWaypoint = currentWaypoint.branches[Random.Range(0, currentWaypoint.branches.Count - 1)];
+
+                currentWaypoint = currentWaypoint.branches[UnityEngine.Random.Range(0, currentWaypoint.branches.Count - 1)];
 
             }
             else
@@ -63,7 +70,7 @@ public class WayPointNavigator : MonoBehaviour
                 }
             }
            
-            currentWaypoint = currentWaypoint.nextWaypoint;
+
             controller.SetDestination(currentWaypoint.GetPosition());
         }
     }
