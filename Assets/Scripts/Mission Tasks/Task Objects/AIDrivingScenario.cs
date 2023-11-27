@@ -25,8 +25,10 @@ public class AIDrivingScenario : MonoBehaviour
         foreach (var action in DrivingActions) {
             yield return action.Execute(carDriver);
 
+            // coroutine-based actions 
+            // may require to wait for end
             if (action.waitForEnd)
-                while (carDriver.NextActionIsReady)
+                while (!carDriver.NextActionIsReady)
                     yield return null;
         }
         if (destroyAfter)
@@ -41,25 +43,5 @@ public class AIDrivingScenario : MonoBehaviour
             .GetComponent<AIDriver>();
         carDriver.transform.Rotate(startRotation);
         carDriver.onFailState += onFailState;
-    }
-
-    IEnumerator DrivingScenarioOld()
-    {
-        carDriver = Instantiate(aiCarPrefab, 
-         startCoords, Quaternion.identity)
-            .GetComponent<AIDriver>();
-        carDriver.transform.Rotate(startRotation);
-
-        carDriver.SetSpeed(15f);
-        carDriver.SetAcceleration(1f);
-        yield return new WaitForSeconds(3f);
-
-        carDriver.SetTurnRate(0.5f);
-        yield return new WaitForSeconds(3f);
-
-        carDriver.StopForSeconds(7f);
-        while (!carDriver.NextActionIsReady)
-            yield return null;
-
     }
 }

@@ -8,8 +8,11 @@ public class EntrySection : Section
     [SerializeField] bool isMainRoad;
     
     [HideInInspector] public UnityAction<EntrySection> onEntry;
+    [HideInInspector] public UnityAction<AIDriver, Transform, EntrySection> checkAIYields;
     [HideInInspector] public bool playerHasEntered = false;
     [HideInInspector] public bool playerInSection = false;
+
+    public bool mainRoad => isMainRoad;
 
     private void OnTriggerEnter(Collider other) 
     {
@@ -18,6 +21,13 @@ public class EntrySection : Section
             onEntry?.Invoke(this);
         } else if (other.gameObject.tag == "AICar") {            
             AddCarToZone(other.transform);        
+        }
+    }
+
+    private void OnTriggerStay(Collider other) 
+    {
+        if (other.gameObject.tag == "AICar") {
+            checkAIYields?.Invoke(other.GetComponent<AIDriver>(), other.transform, this);        
         }
     }
 

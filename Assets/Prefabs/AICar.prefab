@@ -958,7 +958,7 @@ MonoBehaviour:
   reverseAccelerationMultiplier: 0.5
   brakingRate: 0.2
   steeringSpeed: 10
-  maxSteeringAngle: 15
+  maxSteeringAngle: 30
   maxGrip: 0.2
   fTireGripFactor: 1
   rTireGripFactor: 1
@@ -1004,6 +1004,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d195883d10423aa4c92f4082b0212d29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hasToStopCar: 0
   debug: 0
   carController: {fileID: 2858030397462390064}
 --- !u!1 &2858744876001509116

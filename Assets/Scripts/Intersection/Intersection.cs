@@ -9,6 +9,7 @@ public class Intersection : PassiveTaskObject
     [SerializeField] List<InsideSection> InsideSections;
     private Dictionary<Transform, List<Section>> SectionEntries = new Dictionary<Transform, List<Section>>();
     private List<Section> Sections;
+    private List<Section> MainSections;
     private bool playerEnteredIntersection;
 
     private void Awake()
@@ -18,6 +19,8 @@ public class Intersection : PassiveTaskObject
 
     private void EntryAndExitSetup()
     {
+        MainSections = new List<Section>();
+        MainSections.AddRange(InsideSections);
         Sections = new List<Section>();
         Sections.AddRange(EntrySections);
         Sections.AddRange(ExitSections);
@@ -26,8 +29,12 @@ public class Intersection : PassiveTaskObject
             s.onFail += () => onFailState(this);
             s.onZoneEntry += CheckZoneEntry;
         }
-        foreach (var entry in EntrySections)
+        foreach (var entry in EntrySections) {
             entry.onEntry += CheckEntry;
+            entry.checkAIYields += CheckYieldingAI;
+            if (entry.mainRoad)
+                MainSections.Add(entry);
+        }
         foreach (var exit in ExitSections)
             exit.onSuccessfulPass += PassComplete;
     }
@@ -67,6 +74,16 @@ public class Intersection : PassiveTaskObject
             } else
                 onFailState?.Invoke(this);
         }
+    }
+
+    private void CheckYieldingAI(AIDriver d, Transform t, EntrySection eSection)
+    {
+        bool stopCar = false;
+        if (!eSection.mainRoad)
+            foreach (var section in MainSections)
+                if (section.CarsInZoneWithout(t) > 0)
+                    stopCar = true;
+        d.hasToStopCar = stopCar;
     }
 
     private void PassComplete() 
