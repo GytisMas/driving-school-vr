@@ -3,21 +3,22 @@ using UnityEngine;
 public class StopSign : PassiveTaskObject
 {
     bool carStopped;
-    CarControllerV2 carController;
 
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        carController = FindObjectOfType<CarControllerV2>();
+        if (other.gameObject.tag == "Car")
+        {
+            carStopped = false;
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Car" && carController.Carspeed <= 0f && carController.AccelerationInput == 0f)
+        if (other.gameObject.tag == "Car" && other.GetComponent<CarControllerV2>().Carspeed < 0.01f)
         {
             Debug.Log("Mldc sustojai");
             carStopped = true;
         }
-
     }
     private void OnTriggerExit(Collider other)
     {

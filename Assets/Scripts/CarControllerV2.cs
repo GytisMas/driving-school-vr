@@ -227,6 +227,8 @@ public class CarControllerV2 : CarController
         Offsets[i] = onAirOffset;
         if (Physics.Raycast(SuspensionTops[i].position, -springDirection, out hit, offsetRange * 2, colLayerMask))
         {
+            if (hit.collider.isTrigger)
+                return false;
             float springStrength;
             float springDamper;
             // rear wheel
@@ -256,7 +258,10 @@ public class CarControllerV2 : CarController
         for (int i = 0; i < Wheels.Count; i++) {
             var wheel = Wheels[i];
             wheelsTouching[i] = false;
-            if (Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)) {
+            RaycastHit hit;
+            if (Physics.Raycast(wheel.position, -wheel.up, out hit, wheelRadius + 0.1f, colLayerMask)) {
+                if (hit.collider.isTrigger)
+                    continue;
                 wheelsTouchingCount++;
                 wheelsTouching[i] = true;
                 Vector3 steeringDirection = wheel.right;
@@ -287,8 +292,11 @@ public class CarControllerV2 : CarController
     
     private void DecelerationF(Transform wheel, int i) 
     {
-        if (Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask))
+        RaycastHit hit;
+        if (Physics.Raycast(wheel.position, -wheel.up, out hit, wheelRadius + 0.1f, colLayerMask))
         {
+            if (hit.collider.isTrigger)
+                return;
             Vector3 forwardDirection = wheel.forward;
             Vector3 worldVel = rBody.GetPointVelocity(wheel.position);
             float accelVel = Vector3.Dot(forwardDirection, worldVel);
@@ -317,9 +325,12 @@ public class CarControllerV2 : CarController
                     || (!forwardGear && carSpeed > currentMaxSpeed)
                 )
             );
+        RaycastHit hit;
         if (IsDriveWheel(i) && applyTorque &&
-            Physics.Raycast(wheel.position, -wheel.up, wheelRadius + 0.1f, colLayerMask)) 
+            Physics.Raycast(wheel.position, -wheel.up, out hit, wheelRadius + 0.1f,  colLayerMask)) 
         {
+            if (hit.collider.isTrigger)
+                return;
             // Vector3 forwardDirection = forwardGear ? wheel.forward : -wheel.forward;
             Vector3 forwardDirection = wheel.forward;
             float gearMult = forwardGear 

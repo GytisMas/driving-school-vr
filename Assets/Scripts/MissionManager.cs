@@ -15,12 +15,22 @@ public class MissionManager : MonoBehaviour
     private int currTask = -1;
     private bool missionStarted = false;
 
-    void Awake() 
+    void Awake()
     {
         ActivatePassiveTasks();
-        allTasks = 
-            MissionBuilder
-            .GetMission1Tasks(taskObjectHolder, TaskComplete, FailMission);
+        SetTasks();
+    }
+
+    private void SetTasks()
+    {
+        if (SceneManager.GetActiveScene().name == "ParkingLot")
+            allTasks =
+                MissionBuilder
+                .GetTutorialTasks(taskObjectHolder, TaskComplete);
+        else
+            allTasks =
+                MissionBuilder
+                .GetMission1Tasks(taskObjectHolder, TaskComplete, FailMission);
     }
 
     private void Start() 
