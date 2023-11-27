@@ -44,7 +44,6 @@ public class AICarRoutine : ActiveTask
 
     public override void SetAsActive()
     {
-        Debug.Log("2");
         spawner.gameObject.SetActive(true);
         spawner.StartSpawning(DrivingScenarios, timeDelay);
     }

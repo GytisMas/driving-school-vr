@@ -1,17 +1,19 @@
 using UnityEngine;
 
-public class AIStopForSeconds : AIDrivingAction
+public class AISlowAndWait : AIDrivingAction
 {
     public override bool waitForEnd => true;
     public float time = 0f;
-    public AIStopForSeconds(float _time) 
+    public float targetSpeed = 0f;
+    public AISlowAndWait(float _time, float _targetSpeed = 0f) 
     {
         time = _time;
+        targetSpeed = _targetSpeed;
     }
 
     public override WaitForSeconds Execute(AIDriver carDriver)
     {
-        carDriver.StopForSeconds(time);
+        carDriver.SlowDownAndWait(time, targetSpeed);
         return GetDelayOrNull();
     }
 }

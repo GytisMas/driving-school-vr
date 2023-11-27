@@ -8,12 +8,9 @@ public static class MissionBuilder
 {
 
     private static List<ActiveTask> AddAICarRoutine(List<ActiveTask> tasks, float _timeDelay, Transform holder
-        , List<int> scenarioIDs, List<bool> destroyAfterList, UnityAction<PassiveTaskObject> onFailState)
+        , List<int> scenarioIDs, UnityAction<PassiveTaskObject> onFailState)
     {
-        if (scenarioIDs == null 
-         || scenarioIDs.Count < 1 
-         || destroyAfterList == null 
-         || destroyAfterList.Count != scenarioIDs.Count) {
+        if (scenarioIDs == null || scenarioIDs.Count < 1) {
             Debug.LogWarning("Driving routine not created successfully");
             return tasks;
         }
@@ -22,15 +19,14 @@ public static class MissionBuilder
             timeDelay = _timeDelay
         };
 
-        for (int i = 0; i < scenarioIDs.Count; i++) {
-            int scenarioID = scenarioIDs[i];
-            bool destroyAfter = destroyAfterList[i];
+        foreach (int scenarioID in scenarioIDs)
             newTask.AddDrivingScenario(
                 DrivingScenarioBuilder.GetActionList(scenarioID), 
                 DrivingScenarioBuilder.GetStartVector(scenarioID), 
                 DrivingScenarioBuilder.GetStartRotation(scenarioID), 
-                destroyAfter, onFailState);
-        }
+                DrivingScenarioBuilder.GetDestroyAfter(scenarioID), 
+                onFailState);
+
         tasks.Add(newTask);
         return tasks;
     }
@@ -134,14 +130,11 @@ public static class MissionBuilder
         // park Vector3(-395.799652,1.74467468,62.9536514) 0
         tasks = AddAICarRoutine(
             tasks,
-            2f,
+            0f,
             holder,
             new() { 
-                1, 1, 1
+                 2, 3
             },
-            new() {
-                false, true, true
-            }, 
             onFailState
         );
         tasks = AddReachLocationTask(
