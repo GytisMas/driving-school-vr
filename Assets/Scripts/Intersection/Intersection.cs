@@ -97,9 +97,9 @@ public class Intersection : PassiveTaskObject
         d.hasToStopCar = stopCar;
     }
 
-    private void PassComplete() 
+    private void PassComplete(ExitSection exitSection) 
     {
-        Debug.Log("Player passed intersection successfully");
+        Debug.Log($"Player passed intersection through {exitSection.name}");
         foreach (var s in Sections)
             s.ResetPlayerInfo();
         playerEnteredIntersection = false;

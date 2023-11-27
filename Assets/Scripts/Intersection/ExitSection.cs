@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class ExitSection : Section
 {
     [SerializeField] EntrySection[] ValidEntrySections;
-    [HideInInspector] public UnityAction onSuccessfulPass;
+    [HideInInspector] public UnityAction<ExitSection> onSuccessfulPass;
 
     public override void ResetPlayerInfo()
     {
@@ -28,7 +28,7 @@ public class ExitSection : Section
             if (!hasValidEntry) {
                 onFail?.Invoke();
             }
-            onSuccessfulPass?.Invoke();
+            onSuccessfulPass?.Invoke(this);
         }
     }
 }

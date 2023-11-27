@@ -32,7 +32,7 @@ public class MainMenu : MonoBehaviour
 
     public void LaunchTutorial() 
     {
-        SceneManager.LoadScene("Tutorial");
+        SceneManager.LoadScene("ParkingLot");
     }
 
     public void LaunchLevel() 
