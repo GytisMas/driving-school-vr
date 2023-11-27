@@ -93,6 +93,11 @@ public class TrafficLight : MonoBehaviour
         currentState = TrafficLightState.Red;
     }
 
+    public TrafficLightState GetState()
+    {
+        return currentState;
+    }
+
 
 
 
