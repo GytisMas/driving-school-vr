@@ -10,9 +10,9 @@ public class TrafficLightTask : PassiveTaskObject
         if (other.tag == "Car")
         {
             state = transform.parent.gameObject.GetComponent<TrafficLight>().GetState();
-            if (state == TrafficLightState.Red)
+            if (state != TrafficLightState.Green)
             {
-                Debug.Log("Ran red light");
+                Debug.Log("Ran through non-green light");
                 onFailState?.Invoke(this);
             }
         }

@@ -24,7 +24,7 @@ public class MissionManager : MonoBehaviour
 
     private void SetTasks()
     {
-        int missionIndex = 1;
+        int missionIndex = UnityEngine.Random.Range(0, 5);
         if (SceneManager.GetActiveScene().name == "ParkingLot")
             allTasks =
                 MissionBuilder
