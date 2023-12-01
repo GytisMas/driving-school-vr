@@ -13,7 +13,7 @@ public class PedestrianOnCrosswalk : PassiveTaskObject
         {
             if (pedestriansOnCrosswalk > 0)
             {
-                onFailState?.Invoke(this);
+                onFailState?.Invoke(this, "Driving through crosswalk while pedestrians are walking through it");
             }
         }
 

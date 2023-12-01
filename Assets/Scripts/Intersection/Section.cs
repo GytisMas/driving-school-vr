@@ -4,7 +4,7 @@ using UnityEngine.Events;
 public abstract class Section : MonoBehaviour 
 {
     [SerializeField] BoxCollider col;
-    [HideInInspector] public UnityAction onFail;
+    [HideInInspector] public UnityAction<string> onFail;
     [HideInInspector] public UnityAction<Section, Transform> onZoneEntry;
     [HideInInspector] public int CarsInZoneCount => CarsInZone.Count;
     protected List<Transform> CarsInZone = new List<Transform>();

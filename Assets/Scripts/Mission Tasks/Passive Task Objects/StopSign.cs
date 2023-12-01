@@ -24,7 +24,7 @@ public class StopSign : PassiveTaskObject
     {
         if (!carStopped)
         {
-            onFailState?.Invoke(this);
+            onFailState?.Invoke(this, "Driving through stop sign without stopping");
         }
 
     }

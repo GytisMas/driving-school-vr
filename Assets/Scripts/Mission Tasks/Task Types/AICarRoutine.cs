@@ -24,7 +24,7 @@ public class AICarRoutine : ActiveTask
     }
 
     public void AddDrivingScenario(List<AIDrivingAction> DrivingActions, Vector3 start, Vector3 rotation, bool destroyAfter,
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         AIDrivingScenario newScenario = 
             GameObject.Instantiate(drivingScenarioObjPrefab, Vector3.zero, 

@@ -50,7 +50,7 @@ public class InsideSection : Section
             AddCarToZone(other.transform);
             
             if (other.gameObject.tag == "Car" && CarsInZoneWithout(other.transform) > 0)
-                onFail?.Invoke();
+                onFail?.Invoke("Entering intersection while another vehicle has entered the same zone.");
         }
     }
 

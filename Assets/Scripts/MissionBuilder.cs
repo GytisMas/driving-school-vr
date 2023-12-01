@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public static class MissionBuilder 
 {
     public static List<ActiveTask> GetMissionTasks(int index, Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState)
+        UnityAction<PassiveTaskObject, string> onFailState)
     {
         switch (index) {
             case 0:
@@ -143,7 +143,7 @@ public static class MissionBuilder
     } 
 
     private static List<ActiveTask> GetMission1Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         tasks = AddAICarRoutine(tasks, 0f, holder,
@@ -208,7 +208,7 @@ public static class MissionBuilder
     }
 
     private static List<ActiveTask> GetMission0Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         tasks = AddReachLocationTask(tasks, holder, onComplete,
@@ -267,7 +267,7 @@ public static class MissionBuilder
     }
 
     private static List<ActiveTask> GetMission2Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         tasks = AddReachLocationTask(tasks, holder, onComplete,
@@ -315,7 +315,7 @@ public static class MissionBuilder
     }
 
     private static List<ActiveTask> GetMission3Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         tasks = AddReachLocationTask(tasks, holder, onComplete,
@@ -391,7 +391,7 @@ public static class MissionBuilder
     }
 
     private static List<ActiveTask> GetMission4Tasks(Transform holder, UnityAction<ActiveTask> onComplete, 
-        UnityAction<PassiveTaskObject> onFailState) 
+        UnityAction<PassiveTaskObject, string> onFailState) 
     {
         var tasks = new List<ActiveTask>();
         tasks = AddReachLocationTask(tasks, holder, onComplete,
@@ -467,7 +467,7 @@ public static class MissionBuilder
     }
 
     private static List<ActiveTask> AddAICarRoutine(List<ActiveTask> tasks, float _timeDelay, Transform holder
-        , List<int> scenarioIDs, UnityAction<PassiveTaskObject> onFailState)
+        , List<int> scenarioIDs, UnityAction<PassiveTaskObject, string> onFailState)
     {
         if (scenarioIDs == null || scenarioIDs.Count < 1) {
             Debug.LogWarning("Driving routine not created successfully");

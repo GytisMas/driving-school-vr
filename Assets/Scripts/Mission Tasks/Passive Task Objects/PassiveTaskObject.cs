@@ -4,5 +4,5 @@ using UnityEngine.Events;
 
 public class PassiveTaskObject : MonoBehaviour 
 {
-    public UnityAction<PassiveTaskObject> onFailState;
+    public UnityAction<PassiveTaskObject, string> onFailState;
 }

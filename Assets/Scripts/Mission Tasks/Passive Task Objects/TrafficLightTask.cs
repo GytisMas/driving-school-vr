@@ -12,8 +12,7 @@ public class TrafficLightTask : PassiveTaskObject
             state = transform.parent.gameObject.GetComponent<TrafficLight>().GetState();
             if (state != TrafficLightState.Green)
             {
-                Debug.Log("Ran through non-green light");
-                onFailState?.Invoke(this);
+                onFailState?.Invoke(this, "Driving through non-green light");
             }
         }
 

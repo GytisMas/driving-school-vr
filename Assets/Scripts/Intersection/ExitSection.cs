@@ -26,7 +26,7 @@ public class ExitSection : Section
             }
             
             if (!hasValidEntry) {
-                onFail?.Invoke();
+                onFail?.Invoke("Entering or exiting intersection through the wrong lane");
             }
             onSuccessfulPass?.Invoke(this);
         }

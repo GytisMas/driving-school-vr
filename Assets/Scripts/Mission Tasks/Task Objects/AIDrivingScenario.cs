@@ -8,7 +8,7 @@ public class AIDrivingScenario : MonoBehaviour
     public Vector3 startCoords;
     public Vector3 startRotation;
     public bool destroyAfter;
-    [HideInInspector] public UnityAction<PassiveTaskObject> onFailState;
+    [HideInInspector] public UnityAction<PassiveTaskObject, string> onFailState;
     [HideInInspector] public List<AIDrivingAction> DrivingActions;
     [HideInInspector] public UnityAction<AIDrivingScenario> onEnd;
     private AIDriver carDriver;

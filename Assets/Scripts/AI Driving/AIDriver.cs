@@ -118,7 +118,7 @@ public class AIDriver : PassiveTaskObject
     private void OnCollisionEnter(Collision other) 
     {
         if (other.gameObject.tag == "Car") {
-            onFailState?.Invoke(this);
+            onFailState?.Invoke(this, "Collision with another vehicle");
         }
     }
 

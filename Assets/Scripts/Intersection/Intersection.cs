@@ -27,7 +27,7 @@ public class Intersection : PassiveTaskObject
         Sections.AddRange(ExitSections);
         Sections.AddRange(InsideSections);
         foreach (var s in Sections) {
-            s.onFail += () => onFailState(this);
+            s.onFail += (string o) => onFailState(this, o);
             s.onZoneEntry += CheckZoneEntry;
         }
         foreach (var entry in EntrySections) {
@@ -47,13 +47,11 @@ public class Intersection : PassiveTaskObject
     {
         if (!SectionEntries.ContainsKey(t)
          || SectionEntries[t][0] != s)
-            onFailState?.Invoke(this);
+            onFailState?.Invoke(this, "Invalid entry or exit through intersection");
     }
 
     private void CheckEntry(EntrySection entry)
     {
-        if (playerEnteredIntersection)
-            onFailState?.Invoke(this);
         Debug.Log($"Player entering intersection through {entry.gameObject.name}");
         entry.playerHasEntered = true;
         playerEnteredIntersection = true;
@@ -61,6 +59,7 @@ public class Intersection : PassiveTaskObject
 
     private void CheckZoneEntry(Section section, Transform t)
     {
+        // TODO: jei i ta pati entry vaziuoja nefailint misijos
         if (!SectionEntries.ContainsKey(t)) {
             SectionEntries.Add(t, new List<Section>() { section });
         }
@@ -72,7 +71,7 @@ public class Intersection : PassiveTaskObject
             if (SectionEntries[t].Count > 1) {
                 InsideSection firstInsideSec = SectionEntries[t][1] as InsideSection;
                 if (firstInsideSec == null)
-                    onFailState.Invoke(this);
+                    onFailState.Invoke(this, "aa");
                 else if (firstInsideSec == section)
                     inSection.SetCarRelativeToFirst(t, RelativeToFirst.Equal);
                 else if (firstInsideSec.leftTurn == section)
@@ -83,7 +82,11 @@ public class Intersection : PassiveTaskObject
                 else
                     inSection.SetCarRelativeToFirst(t, RelativeToFirst.Other);
             } else
-                onFailState?.Invoke(this);
+                onFailState?.Invoke(this, "Entering inside of intersection through wrong entry point");
+        } else if (section is EntrySection) {
+            if (section != SectionEntries[t][0]) {
+                onFailState?.Invoke(this, "Invalid entry or exit through intersection");
+            }
         }
     }
 
