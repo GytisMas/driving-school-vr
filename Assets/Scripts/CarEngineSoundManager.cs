@@ -12,6 +12,7 @@ public class CarEngineSoundManager : MonoBehaviour
 
     public AudioSource audioSource;
     private bool isAccelerating = false;
+    public CarControllerV2 carController;
 
     void Start()
     {
@@ -22,7 +23,17 @@ public class CarEngineSoundManager : MonoBehaviour
     void Update()
     {
 
-        isAccelerating = Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow);
+       
+
+        if(carController.AccelerationInput == 1)
+        {
+            isAccelerating = true;
+        }
+        else
+        {
+            isAccelerating = false;
+        }
+        
 
 
         if (isAccelerating)
