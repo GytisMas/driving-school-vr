@@ -16,7 +16,8 @@ public class MissionManager : MonoBehaviour
     private int currTask = -1;
     private bool missionStarted = false;
     private bool failed = false;
-
+    public delegate void MissionFailedEvent(string drivingError);
+    public static event MissionFailedEvent OnMissionFailed;
     void Awake()
     {
         ActivatePassiveTasks();
@@ -50,13 +51,15 @@ public class MissionManager : MonoBehaviour
             pTask.onFailState += FailMission;
     }
 
-    private void FailMission(PassiveTaskObject pObj, string drivingError) 
+    public void FailMission(PassiveTaskObject pObj, string drivingError) 
     {
         if (failed) 
             return;
+        
         Debug.Log($"Mission failed. Detected driving error: {drivingError}");
         failed = true;
         StartCoroutine(BulletTime());
+        OnMissionFailed?.Invoke(drivingError);
         // SceneManager.LoadScene("MainMenu");
     }
 

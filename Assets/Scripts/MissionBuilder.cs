@@ -8,7 +8,7 @@ public static class MissionBuilder
 {
     public static List<ActiveTask> GetMissionTasks(int index, Transform holder, UnityAction<ActiveTask> onComplete, 
         UnityAction<PassiveTaskObject, string> onFailState)
-    {
+    { 
         switch (index) {
             case 0:
                 return GetMission0Tasks(holder, onComplete, onFailState);
