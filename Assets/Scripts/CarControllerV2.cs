@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 public class CarControllerV2 : CarController
 {
@@ -57,6 +58,9 @@ public class CarControllerV2 : CarController
 
     public bool aiDriving = false;
 
+    [HideInInspector] public UnityAction<bool, float> tireSmoke;
+    [HideInInspector] public bool forbidInputs = false; 
+
     List<float> Offsets = new List<float> {
         0f, 0f, 0f, 0f
     };
@@ -77,6 +81,7 @@ public class CarControllerV2 : CarController
     public float AccelerationInput => accelerationInput;
     private float[] steeringStrs = new float[4];
     private bool[] wheelsTouching = new bool[4];
+    
 
     public float CarSpeed {
         get {
@@ -134,6 +139,10 @@ public class CarControllerV2 : CarController
 
     private void SetCarGear() 
     {
+        if (forbidInputs) {
+            forwardGear = true;
+            return;
+        }
         InputLabel pressedGearKey = CustomInput.GetInputDown(InputLabel.GEARUP | InputLabel.GEARDOWN);
         // dont change gear if none 
         // or both buttons are pressed
@@ -145,6 +154,10 @@ public class CarControllerV2 : CarController
 
     public void SetAccelerationInput()
     {
+        if (forbidInputs) {
+            accelerationInput = -1;
+            return;
+        }
         if (LogitechSteeringWheel.wheelConnected) {
             float gasInput = 1 - CustomInput.GetAxisNormalised01("Gas");
             float brakeInput = 1 - CustomInput.GetAxisNormalised01("Brake");
@@ -155,6 +168,10 @@ public class CarControllerV2 : CarController
 
     public void SetHorizontalInput()
     {
+        if (forbidInputs) {
+            horizontalInput = 0;
+            return;
+        }
         if (LogitechSteeringWheel.wheelConnected)
             horizontalInput = CustomInput.GetAxisNormalised("Steering");
         else
@@ -276,7 +293,7 @@ public class CarControllerV2 : CarController
         float localMaxGrip = (float)(maxGrip * (wheelsTouchingCount / 4f));
         float averageVel = totalVel / 4f;        
         float cappedVel = averageVel < localMaxGrip ? averageVel : localMaxGrip;
-
+        tireSmoke?.Invoke(averageVel > localMaxGrip, steeringStrs[2] / totalVel);
         // Debug.Log($"{wheelsTouching[0]} {cappedVel} {steeringStrs[0]} {totalVel} {Wheels[0].right}");
 
         for (int i = 0; i < Wheels.Count; i++) {

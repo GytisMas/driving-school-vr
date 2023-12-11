@@ -1243,6 +1243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   taskObjectHolder: {fileID: 0}
+  playerCar: {fileID: 0}
 --- !u!1 &2858030397809403121
 GameObject:
   m_ObjectHideFlags: 0
@@ -4472,6 +4473,7 @@ MonoBehaviour:
   - {fileID: 8515656506310840618}
   carSpeedText: {fileID: 0}
   aiDriving: 0
+  forbidInputs: 0
 --- !u!1 &2858744876001509116
 GameObject:
   m_ObjectHideFlags: 0
@@ -7584,6 +7586,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1478792470800294285}
+  - component: {fileID: 5653488925598402926}
+  - component: {fileID: 2722869930647700704}
   m_Layer: 3
   m_Name: WRL
   m_TagString: Untagged
@@ -7607,6 +7611,32 @@ Transform:
   m_Father: {fileID: 2857170569096757464}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5653488925598402926
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6598654911924208924}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.4539743, y: 0.6448256, z: 0.702432}
+  m_Center: {x: -0.033266157, y: 0.04666549, z: -0.021081094}
+--- !u!65 &2722869930647700704
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6598654911924208924}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.4539743, y: 0.6448256, z: 0.702432}
+  m_Center: {x: -0.033266157, y: 0.04666549, z: -0.021081094}
 --- !u!1 &8870935018106297391
 GameObject:
   m_ObjectHideFlags: 0

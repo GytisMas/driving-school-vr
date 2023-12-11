@@ -16,7 +16,8 @@ public enum InputLabel
     R3 = 16,
     GEARUP = 32,
     GEARDOWN = 64,
-    ALL = 1+2+4+8+16+32+64,
+    ESCAPE = 128,
+    ALL = 1+2+4+8+16+32+64+128,
 }
 enum WheelKeyState 
 {
@@ -46,6 +47,8 @@ public class CustomInput : MonoBehaviour
             inputRes = InputLabel.GEARUP;
         if (GetKeyDown(input, InputLabel.GEARDOWN, KeyCode.N, 5))
             inputRes = InputLabel.GEARDOWN;
+        if (GetKeyDown(input, InputLabel.ESCAPE, KeyCode.Escape, 3))
+            inputRes = InputLabel.ESCAPE;
         return inputRes;
     }
     

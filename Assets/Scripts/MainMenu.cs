@@ -8,15 +8,19 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
+    [SerializeField] private bool isInGameMenu = false;
     [SerializeField] private EventSystem eventSystem;
     [SerializeField] private Button[] buttons;
+    [SerializeField] private GameObject menuPanel;
     private int selectedButtonIndex = 0;
+    private bool canDetectInputThisFrame = true;
     private void Awake() {
     }
 
     void Start()
     {
         SelectPrimary();
+        HideMenu();
     }
 
     private void DetectMenuInput()
@@ -50,6 +54,21 @@ public class MainMenu : MonoBehaviour
         SelectButton(0);
     }
 
+    public void ResumeGame()
+    {
+        HideMenu();
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); 
+    }
+
+    public void ExitGame()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
+
     private void SelectButton(int index)
     {
         buttons[index].Select();
@@ -60,10 +79,10 @@ public class MainMenu : MonoBehaviour
     {
         switch (input) {
             case InputLabel.UP:
-                SelectButton(Modulo(selectedButtonIndex - 1, 4));
+                SelectButton(Modulo(selectedButtonIndex - 1, buttons.Length));
                 break;
             case InputLabel.DOWN:
-                SelectButton(Modulo(selectedButtonIndex + 1, 4));
+                SelectButton(Modulo(selectedButtonIndex + 1, buttons.Length));
                 break;
         }
     }
@@ -74,9 +93,53 @@ public class MainMenu : MonoBehaviour
         return r < 0 ? r + b : r;
     }
 
+    public void ShowMenu()
+    {
+
+        if (menuPanel != null)
+        {
+            menuPanel.SetActive(true);
+        }
+    }
+
+    public void HideMenu()
+    {
+        if (menuPanel != null)
+        {
+            menuPanel.SetActive(false);
+        }
+    }
+    private void ToggleOpenMenu()
+    {
+        if (!isInGameMenu)
+            return;
+        if (CustomInput.GetInputDown(InputLabel.ESCAPE) != 0)
+        {
+            ToggleMenu();
+            canDetectInputThisFrame = false;
+        } else {
+            canDetectInputThisFrame = true;
+        }
+    }
+
+    public void ToggleMenu()
+    {
+        if (menuPanel != null)
+        {
+            menuPanel.SetActive(!menuPanel.activeSelf);
+        }
+    }
+
     private void Update()
     {
-        DetectMenuInput();
+        ToggleOpenMenu();
+        if (ActiveMenu())
+            DetectMenuInput();
+    }
+
+    private bool ActiveMenu()
+    {
+        return !isInGameMenu || (canDetectInputThisFrame && menuPanel != null && menuPanel.activeSelf);
     }
 
     public void OnQuit()

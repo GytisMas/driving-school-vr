@@ -58,7 +58,8 @@ public class MissionManager : MonoBehaviour
         
         Debug.Log($"Mission failed. Detected driving error: {drivingError}");
         failed = true;
-        StartCoroutine(BulletTime());
+        // StartCoroutine(BulletTime());
+        playerCar.GetComponent<CarControllerV2>().forbidInputs = true;
         OnMissionFailed?.Invoke(drivingError);
         // SceneManager.LoadScene("MainMenu");
     }
