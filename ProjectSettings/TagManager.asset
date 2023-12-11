@@ -8,6 +8,10 @@ TagManager:
   - Car
   - AICar
   - Human
+  - WFR
+  - WFL
+  - WRL
+  - WRR
   layers:
   - Default
   - TransparentFX
