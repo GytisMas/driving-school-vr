@@ -16,6 +16,7 @@ public class MissionManager : MonoBehaviour
     private int currTask = -1;
     private bool missionStarted = false;
     private bool failed = false;
+    private int missionIndex = 0;
     public delegate void MissionFailedEvent(string drivingError);
     public static event MissionFailedEvent OnMissionFailed;
     void Awake()
@@ -26,7 +27,10 @@ public class MissionManager : MonoBehaviour
 
     private void SetTasks()
     {
-        int missionIndex = UnityEngine.Random.Range(0, 5);
+
+        // int missionIndex = UnityEngine.Random.Range(0, 5);
+        missionIndex = PlayerPrefs.GetInt("NextLevel");
+
         if (SceneManager.GetActiveScene().name == "ParkingLot")
             allTasks =
                 MissionBuilder
@@ -91,7 +95,7 @@ public class MissionManager : MonoBehaviour
             FinishMission();
     }
 
-    private static void FinishMission()
+    private void FinishMission()
     {
         SceneManager.LoadScene("MainMenu");
     }

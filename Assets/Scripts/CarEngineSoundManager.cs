@@ -16,33 +16,16 @@ public class CarEngineSoundManager : MonoBehaviour
 
     void Start()
     {
-       
         audioSource.pitch = normalPitch;
     }
 
     void Update()
     {
-
-       
-
-        if(carController.AccelerationInput == 1)
-        {
-            isAccelerating = true;
+        float potentialPitch = normalPitch;
+        if (carController.Carspeed > 0.1f) {
+            potentialPitch += Mathf.Sqrt(carController.Carspeed / carController.maxSpeed * 0.25f);
         }
-        else
-        {
-            isAccelerating = false;
-        }
-        
+        audioSource.pitch = Mathf.Min(potentialPitch, maxEnginePitch);
 
-
-        if (isAccelerating)
-        {
-            audioSource.pitch = Mathf.Min(audioSource.pitch + accelerationRate * Time.deltaTime, maxEnginePitch);
-        }
-        else
-        { 
-            audioSource.pitch = Mathf.Max(audioSource.pitch - decelerationRate * Time.deltaTime, normalPitch);
-        }
     }
 }

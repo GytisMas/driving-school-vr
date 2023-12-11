@@ -41,6 +41,12 @@ public class MainMenu : MonoBehaviour
 
     public void LaunchLevel() 
     {
+        int currentMission = PlayerPrefs.GetInt("NextLevel");
+        int newMissionIndex = -1;
+        do {
+            newMissionIndex = UnityEngine.Random.Range(0, 5);
+        } while (currentMission == newMissionIndex);
+        PlayerPrefs.SetInt("NextLevel", newMissionIndex);
         SceneManager.LoadScene("City");
     }
 

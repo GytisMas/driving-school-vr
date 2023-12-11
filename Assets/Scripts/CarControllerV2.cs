@@ -59,7 +59,7 @@ public class CarControllerV2 : CarController
     public bool aiDriving = false;
 
     [HideInInspector] public UnityAction<bool, float> tireSmoke;
-    [HideInInspector] public bool forbidInputs = false; 
+    public bool forbidInputs = false; 
 
     List<float> Offsets = new List<float> {
         0f, 0f, 0f, 0f

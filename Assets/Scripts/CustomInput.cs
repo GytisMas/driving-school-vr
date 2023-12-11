@@ -47,7 +47,7 @@ public class CustomInput : MonoBehaviour
             inputRes = InputLabel.GEARUP;
         if (GetKeyDown(input, InputLabel.GEARDOWN, KeyCode.N, 5))
             inputRes = InputLabel.GEARDOWN;
-        if (GetKeyDown(input, InputLabel.ESCAPE, KeyCode.Escape, 3))
+        if (GetKeyDown(input, InputLabel.ESCAPE, KeyCode.Escape, 11))
             inputRes = InputLabel.ESCAPE;
         return inputRes;
     }
