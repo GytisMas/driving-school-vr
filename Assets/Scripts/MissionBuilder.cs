@@ -107,7 +107,7 @@ public static class MissionBuilder
         );
         tasks = AddParkingTask(tasks, taskObjectHolder, onComplete,
             new() {
-                new Vector3(-4.28999996f,1f,18.3500004f),
+                new Vector3(-4.28999996f,1.5f,18.3500004f),
             },
             new() {
                 -90f

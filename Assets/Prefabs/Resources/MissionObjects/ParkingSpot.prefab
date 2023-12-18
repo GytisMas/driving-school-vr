@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1911056718781098097}
   - component: {fileID: 4864099284796484693}
   - component: {fileID: 8632725074185156255}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RightSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 751651202399437735}
   - component: {fileID: 8960182302524581428}
   - component: {fileID: 8519633173724078203}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TextMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 3060626092712338933}
   - component: {fileID: 3060626092712338932}
   - component: {fileID: 1472436030931874379}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ParkingSpot
   m_TagString: GoodCollision
   m_Icon: {fileID: 0}
@@ -337,7 +337,7 @@ GameObject:
   - component: {fileID: 7120339207454396429}
   - component: {fileID: 8646412432624294594}
   - component: {fileID: 1916181925037397353}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeftSide
   m_TagString: Untagged
   m_Icon: {fileID: 0}

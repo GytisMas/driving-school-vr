@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3060626092712338933}
   - component: {fileID: 3060626092712338932}
   - component: {fileID: -8378719927430564311}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LocationToEnter
   m_TagString: GoodCollision
   m_Icon: {fileID: 0}
